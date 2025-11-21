@@ -23,4 +23,5 @@ build
 !.yarn/sdks
 !.yarn/versions
 
-.medusa
+.medusapackage-lock.json
+.medusa/
