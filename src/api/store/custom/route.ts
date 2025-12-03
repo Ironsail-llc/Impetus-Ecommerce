@@ -4,5 +4,9 @@ export async function GET(
   req: MedusaRequest,
   res: MedusaResponse
 ) {
-  res.sendStatus(200);
+  res.json({
+    message: "Impetus E-commerce API is running!",
+    timestamp: new Date().toISOString(),
+    version: "1.0.0"
+  });
 }
