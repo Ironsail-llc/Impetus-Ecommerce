@@ -17,5 +17,19 @@ module.exports = defineConfig({
     {
       resolve: "./src/modules/bundled-product",
     },
+    {
+      resolve: "./src/modules/digital-product",
+    },
+    {
+      resolve: "@medusajs/medusa/fulfillment",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/digital-product-fulfillment",
+            id: "digital",
+          },
+        ],
+      },
+    },
   ],
 })
