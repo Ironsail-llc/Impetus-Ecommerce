@@ -15,6 +15,9 @@ module.exports = defineConfig({
   },
   modules: [
     {
+      resolve: "./src/modules/loyalty",
+    },
+    {
       resolve: "./src/modules/bundled-product",
     },
     {
