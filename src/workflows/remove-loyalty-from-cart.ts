@@ -1,3 +1,12 @@
+/**
+ * @deprecated This workflow is for the legacy points-as-cash redemption model.
+ *
+ * In the new model:
+ * - Tier discounts are removed via removeTierDiscountFromCartWorkflow
+ * - Reward coupons are managed separately
+ *
+ * This workflow will be repurposed for removing redeemed reward coupons.
+ */
 import {
   createWorkflow,
   transform,

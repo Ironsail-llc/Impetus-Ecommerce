@@ -1,3 +1,12 @@
+/**
+ * @deprecated This workflow is for the legacy points-as-cash redemption model.
+ *
+ * In the new model:
+ * - Tier discounts are automatically applied via applyTierDiscountOnCartWorkflow
+ * - Points are redeemed for specific rewards/coupons, not arbitrary discounts
+ *
+ * This workflow will be repurposed for applying redeemed reward coupons.
+ */
 import {
   createWorkflow,
   transform,

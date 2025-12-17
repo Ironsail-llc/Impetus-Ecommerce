@@ -3,11 +3,12 @@ import {
   StepResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { LOYALTY_MODULE } from "../../modules/loyalty"
-import LoyaltyModuleService from "../../modules/loyalty/service"
+import LoyaltyModuleService, { TRANSACTION_TYPES } from "../../modules/loyalty/service"
 
 type StepInput = {
   customer_id: string
-  amount: number
+  amount: number // Order total in currency
+  order_id?: string
 }
 
 export const addPurchaseAsPointsStep = createStep(
@@ -17,18 +18,28 @@ export const addPurchaseAsPointsStep = createStep(
       LOYALTY_MODULE
     )
 
-    const pointsToAdd = await loyaltyModuleService.calculatePointsFromAmount(
+    // Calculate base points from purchase amount
+    const basePoints = await loyaltyModuleService.calculatePointsFromAmount(
       input.amount
     )
 
-    const result = await loyaltyModuleService.addPoints(
+    // earnPoints will apply the tier multiplier automatically
+    const result = await loyaltyModuleService.earnPoints(
       input.customer_id,
-      pointsToAdd
+      basePoints,
+      TRANSACTION_TYPES.PURCHASE_EARNED,
+      `Points earned from purchase of $${input.amount.toFixed(2)}`,
+      "order",
+      input.order_id
     )
+
+    // Check for tier upgrade after earning points
+    await loyaltyModuleService.checkTierUpgrade(input.customer_id)
 
     return new StepResponse(result, {
       customer_id: input.customer_id,
-      points: pointsToAdd
+      points: basePoints,
+      order_id: input.order_id
     })
   },
   async (data, { container }) => {
@@ -40,9 +51,13 @@ export const addPurchaseAsPointsStep = createStep(
       LOYALTY_MODULE
     )
 
-    await loyaltyModuleService.deductPoints(
+    // Deduct points in case of order failure/refund
+    await loyaltyModuleService.redeemPoints(
       data.customer_id,
-      data.points
+      data.points,
+      `Points reversed due to order cancellation/refund`,
+      "refund",
+      data.order_id
     )
   }
 )

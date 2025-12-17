@@ -55,8 +55,9 @@ const createDigitalProductOrderWorkflow = createWorkflow(
     }).config({ name: "retrieve-existing-links" })
 
     const itemsWithDigitalProducts = transform({ orders }, (data) => {
-      return data.orders[0].items?.filter(
-        (item) => item?.variant?.digital_product !== undefined
+      const items = data.orders[0].items || []
+      return items.filter(
+        (item: any) => item?.variant?.digital_product !== undefined
       )
     })
 
