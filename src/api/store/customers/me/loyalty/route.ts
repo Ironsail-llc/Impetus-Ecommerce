@@ -5,6 +5,17 @@ import {
 import { LOYALTY_MODULE } from "../../../../../modules/loyalty"
 import LoyaltyModuleService from "../../../../../modules/loyalty/service"
 
+// Helper to get tier colors
+function getTierColor(tierName: string): string {
+  const colors: Record<string, string> = {
+    "Bronze": "#CD7F32",
+    "Silver": "#C0C0C0",
+    "Gold": "#FFD700",
+    "Platinum": "#E5E4E2",
+  }
+  return colors[tierName] || "#6b7280"
+}
+
 /**
  * GET /store/customers/me/loyalty
  * Get comprehensive loyalty information for the authenticated customer
@@ -83,35 +94,71 @@ export async function GET(
   // Get recent transactions
   const transactions = await loyaltyService.getTransactionHistory(customerId, 10)
 
+  // Get config values for frontend
+  const earnRate = await loyaltyService.getConfig<number>("earn_rate")
+  const signupBonusEnabled = await loyaltyService.getConfig<boolean>("signup_bonus_enabled")
+  const signupBonusAmount = await loyaltyService.getConfig<number>("signup_bonus_amount")
+
+  // Format tiers for frontend (expects min_points, discount_percentage, benefits array, color)
+  const tiersFormatted = sortedTiers.map(tier => ({
+    id: tier.id,
+    name: tier.name,
+    min_points: tier.threshold,
+    discount_percentage: tier.discount_percent,
+    benefits: tier.benefits_description ? tier.benefits_description.split(", ") : [],
+    color: getTierColor(tier.name),
+  }))
+
+  // Format current tier for account.tier
+  const currentTierFormatted = currentTier ? {
+    id: currentTier.id,
+    name: currentTier.name,
+    min_points: currentTier.threshold,
+    discount_percentage: currentTier.discount_percent,
+    benefits: currentTier.benefits_description ? currentTier.benefits_description.split(", ") : [],
+    color: getTierColor(currentTier.name),
+  } : null
+
+  // Format transactions for frontend (expects points, type, source, description)
+  const transactionsFormatted = transactions.map(tx => ({
+    id: tx.id,
+    points: Math.abs(tx.amount),
+    type: tx.type.includes("earned") || tx.type.includes("bonus") ? "earn" :
+          tx.type === "redeemed" ? "redeem" :
+          tx.type === "expired" ? "expire" : "adjust",
+    source: tx.type,
+    description: tx.description,
+    order_id: tx.reference_type === "order" ? tx.reference_id : null,
+    created_at: tx.created_at,
+  }))
+
   res.json({
     account: {
       id: account.id,
-      balance: account.balance,
-      lifetime_earned: account.lifetime_earned,
-      lifetime_redeemed: account.lifetime_redeemed,
+      customer_id: customerId,
+      points_balance: account.balance,
+      lifetime_points: account.lifetime_earned,
+      tier_id: currentTier?.id || null,
+      tier: currentTierFormatted,
       referral_code: account.referral_code,
-      last_activity_at: account.last_activity_at,
+      created_at: account.created_at,
+      updated_at: account.updated_at,
     },
-    tier: currentTier ? {
-      id: currentTier.id,
-      name: currentTier.name,
-      discount_percent: currentTier.discount_percent,
-      benefits_description: currentTier.benefits_description,
-    } : null,
+    tiers: tiersFormatted,
     next_tier: nextTier ? {
       id: nextTier.id,
       name: nextTier.name,
-      threshold: nextTier.threshold,
-      discount_percent: nextTier.discount_percent,
-      benefits_description: nextTier.benefits_description,
+      min_points: nextTier.threshold,
+      discount_percentage: nextTier.discount_percent,
+      benefits: nextTier.benefits_description ? nextTier.benefits_description.split(", ") : [],
+      color: getTierColor(nextTier.name),
     } : null,
-    progress,
-    redemption: {
-      points_value: pointsValue,
-      redemption_rate: redemptionRate,
-      min_redemption: minRedemption,
-      can_redeem: canRedeem,
+    points_to_next_tier: progress?.points_to_next_tier || 0,
+    recent_transactions: transactionsFormatted,
+    config: {
+      points_per_dollar: earnRate,
+      signup_bonus_enabled: signupBonusEnabled,
+      signup_bonus_amount: signupBonusAmount,
     },
-    recent_transactions: transactions,
   })
 }
