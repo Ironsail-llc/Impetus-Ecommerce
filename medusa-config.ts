@@ -5,6 +5,7 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    ...(process.env.REDIS_URL && { redisUrl: process.env.REDIS_URL }),
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
@@ -16,6 +17,9 @@ module.exports = defineConfig({
   modules: [
     {
       resolve: "./src/modules/loyalty",
+    },
+    {
+      resolve: "./src/modules/webhooks",
     },
     {
       resolve: "./src/modules/bundled-product",

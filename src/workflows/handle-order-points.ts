@@ -67,7 +67,7 @@ export const handleOrderPointsWorkflow = createWorkflow(
     // Extract cart data for tier promotion step
     const cartData = transform(orders, (ordersData) => ({
       cart_metadata: ordersData[0]?.cart?.metadata || null,
-      cart_promotions: ordersData[0]?.cart?.promotions || null,
+      cart_promotions: (ordersData[0]?.cart?.promotions || []).filter(Boolean) as any[] || null,
     }))
 
     // Deactivate any tier discount promotion that was used

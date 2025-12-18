@@ -1,62 +1,275 @@
-<p align="center">
-  <a href="https://www.medusajs.com">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/59018053/229103275-b5e482bb-4601-46e6-8142-244f531cebdb.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    <img alt="Medusa logo" src="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    </picture>
-  </a>
-</p>
-<h1 align="center">
-  Medusa
-</h1>
+# Impetus E-commerce
 
-<h4 align="center">
-  <a href="https://docs.medusajs.com">Documentation</a> |
-  <a href="https://www.medusajs.com">Website</a>
-</h4>
+A feature-rich e-commerce platform built on Medusa v2 with custom modules for loyalty programs, webhooks, digital products, and product bundles.
 
-<p align="center">
-  Building blocks for digital commerce
-</p>
-<p align="center">
-  <a href="https://github.com/medusajs/medusa/blob/master/CONTRIBUTING.md">
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
-  </a>
-    <a href="https://www.producthunt.com/posts/medusa"><img src="https://img.shields.io/badge/Product%20Hunt-%231%20Product%20of%20the%20Day-%23DA552E" alt="Product Hunt"></a>
-  <a href="https://discord.gg/xpCwq3Kfn8">
-    <img src="https://img.shields.io/badge/chat-on%20discord-7289DA.svg" alt="Discord Chat" />
-  </a>
-  <a href="https://twitter.com/intent/follow?screen_name=medusajs">
-    <img src="https://img.shields.io/twitter/follow/medusajs.svg?label=Follow%20@medusajs" alt="Follow @medusajs" />
-  </a>
-</p>
+## Features
 
-## Compatibility
+| Module | Description |
+|--------|-------------|
+| **Loyalty & Rewards** | Points system, tier progression, referral program, rewards catalog |
+| **Webhooks** | HMAC-signed webhook delivery with retries and dead letter queue |
+| **Digital Products** | Sell and deliver downloadable content with secure downloads |
+| **Bundled Products** | Create product bundles with multiple items |
 
-This starter is compatible with versions >= 2 of `@medusajs/medusa`. 
+---
 
-## Getting Started
+## Quick Start
 
-Visit the [Quickstart Guide](https://docs.medusajs.com/learn/installation) to set up a server.
+### Prerequisites
 
-Visit the [Docs](https://docs.medusajs.com/learn/installation#get-started) to learn more about our system requirements.
+- Node.js 20+
+- PostgreSQL database
+- npm or yarn
 
-## What is Medusa
+### Installation
 
-Medusa is a set of commerce modules and tools that allow you to build rich, reliable, and performant commerce applications without reinventing core commerce logic. The modules can be customized and used to build advanced ecommerce stores, marketplaces, or any product that needs foundational commerce primitives. All modules are open-source and freely available on npm.
+```bash
+# Clone and install dependencies
+git clone <repository>
+cd Impetus-Ecommerce
+npm install
 
-Learn more about [Medusa’s architecture](https://docs.medusajs.com/learn/introduction/architecture) and [commerce modules](https://docs.medusajs.com/learn/fundamentals/modules/commerce-modules) in the Docs.
+# Configure environment
+cp .env.example .env
+# Edit .env with your database URL and secrets
 
-## Community & Contributions
+# Run migrations
+npx medusa db:migrate
 
-The community and core team are available in [GitHub Discussions](https://github.com/medusajs/medusa/discussions), where you can ask for support, discuss roadmap, and share ideas.
+# Seed admin user
+npx medusa user -e admin@example.com -p password123
 
-Join our [Discord server](https://discord.com/invite/medusajs) to meet other community members.
+# Start development server
+npm run dev
+```
 
-## Other channels
+### Build for Production
 
-- [GitHub Issues](https://github.com/medusajs/medusa/issues)
-- [Twitter](https://twitter.com/medusajs)
-- [LinkedIn](https://www.linkedin.com/company/medusajs)
-- [Medusa Blog](https://medusajs.com/blog/)
+```bash
+npm run build
+npm start
+```
+
+---
+
+## Environment Variables
+
+```env
+# Database
+DATABASE_URL=postgresql://user:pass@host:5432/db
+
+# CORS (comma-separated origins)
+STORE_CORS=http://localhost:8000
+ADMIN_CORS=http://localhost:9000
+AUTH_CORS=http://localhost:9000
+
+# Secrets
+JWT_SECRET=your-jwt-secret
+COOKIE_SECRET=your-cookie-secret
+
+# Store URL (for referral links)
+STORE_URL=https://your-store.com
+
+# Redis (optional - for multi-instance deployments)
+# REDIS_URL=redis://localhost:6379
+```
+
+---
+
+## Custom Modules
+
+### Loyalty & Rewards System
+
+Full-featured loyalty program with points, tiers, and referrals.
+
+**Key Features:**
+- Earn points on purchases (configurable rate)
+- Tier progression: Bronze → Silver → Gold → Platinum
+- Referral program with unique codes
+- Rewards catalog with multiple reward types
+- Birthday bonuses
+
+**Documentation:** [docs/LOYALTY_SYSTEM.md](docs/LOYALTY_SYSTEM.md)
+
+**Store API:**
+```bash
+GET  /store/customers/me/loyalty          # Get loyalty account
+POST /store/cart/:id/loyalty/apply        # Apply points to cart
+GET  /store/customers/me/referral         # Get referral info
+GET  /store/referral/validate/:code       # Validate referral code
+```
+
+**Admin API:**
+```bash
+GET  /admin/loyalty/config                # Get config
+PUT  /admin/loyalty/config                # Update config
+GET  /admin/loyalty/tiers                 # List tiers
+POST /admin/loyalty/rewards               # Create reward
+GET  /admin/loyalty/stats                 # Program statistics
+```
+
+---
+
+### Webhooks System
+
+Production-ready webhook delivery with HMAC signing and automatic retries.
+
+**Key Features:**
+- HMAC-SHA256 signatures for verification
+- Automatic retries with exponential backoff
+- Dead letter queue for failed deliveries
+- Per-endpoint configuration
+- Full delivery audit trail
+
+**Documentation:** [docs/WEBHOOKS_SYSTEM.md](docs/WEBHOOKS_SYSTEM.md)
+
+**Supported Events:**
+- `order.placed`, `order.completed`, `order.canceled`
+- `customer.created`, `customer.updated`
+- `webhook.test`
+
+**Admin API:**
+```bash
+GET    /admin/webhooks                    # List endpoints
+POST   /admin/webhooks                    # Create endpoint
+POST   /admin/webhooks/:id/test           # Test delivery
+POST   /admin/webhooks/:id/rotate-secret  # Rotate secret
+GET    /admin/webhooks/deliveries         # Delivery history
+POST   /admin/webhooks/deliveries/:id/retry # Manual retry
+```
+
+---
+
+### Digital Products
+
+Sell downloadable content with secure delivery.
+
+**Key Features:**
+- Upload main and preview files
+- Secure download URLs for purchasers
+- Public preview files for product pages
+- Digital fulfillment provider (no shipping)
+
+**Documentation:** [docs/DIGITAL_PRODUCTS.md](docs/DIGITAL_PRODUCTS.md)
+
+**Store API:**
+```bash
+GET  /store/customers/me/digital-products           # My purchases
+POST /store/customers/me/digital-products/:id/download  # Get download URL
+GET  /store/digital-products/:id/preview            # Get preview
+```
+
+**Admin API:**
+```bash
+GET  /admin/digital-products              # List products
+POST /admin/digital-products              # Create product
+POST /admin/digital-products/upload/:type # Upload file
+```
+
+---
+
+### Bundled Products
+
+Create product bundles with multiple items.
+
+**Key Features:**
+- Group products into bundles
+- Configurable item quantities
+- Bundle linked to sellable product
+- Show savings vs individual purchase
+
+**Documentation:** [docs/BUNDLED_PRODUCTS.md](docs/BUNDLED_PRODUCTS.md)
+
+**Store API:**
+```bash
+GET /store/bundles                        # List bundles
+GET /store/bundles/:id                    # Get bundle details
+```
+
+**Admin API:**
+```bash
+GET    /admin/bundles                     # List bundles
+POST   /admin/bundles                     # Create bundle
+PUT    /admin/bundles/:id                 # Update bundle
+DELETE /admin/bundles/:id                 # Delete bundle
+```
+
+---
+
+## Project Structure
+
+```
+src/
+├── api/
+│   ├── admin/              # Admin API routes
+│   │   ├── bundles/
+│   │   ├── digital-products/
+│   │   ├── loyalty/
+│   │   └── webhooks/
+│   └── store/              # Store API routes
+│       ├── bundles/
+│       ├── cart/
+│       ├── customers/
+│       ├── digital-products/
+│       └── referral/
+├── links/                  # Module links
+├── modules/                # Custom modules
+│   ├── bundled-product/
+│   ├── digital-product/
+│   ├── digital-product-fulfillment/
+│   ├── loyalty/
+│   └── webhooks/
+├── subscribers/            # Event subscribers
+└── workflows/              # Business workflows
+    └── steps/
+```
+
+---
+
+## Workflows
+
+| Workflow | Trigger | Description |
+|----------|---------|-------------|
+| `handle-order-points` | Order placed | Awards points, completes referrals |
+| `apply-loyalty-on-cart` | Cart update | Applies points redemption |
+| `apply-tier-discount-on-cart` | Cart update | Applies tier discounts |
+| `create-bundled-product` | Admin action | Creates bundle with items |
+| `create-digital-product` | Admin action | Creates digital product |
+
+---
+
+## Subscribers
+
+| Subscriber | Event | Description |
+|------------|-------|-------------|
+| `loyalty-order-placed` | `order.placed` | Triggers points workflow |
+| `loyalty-customer-created` | `customer.created` | Creates account, processes referral |
+| `webhook-order-placed` | `order.placed` | Dispatches webhooks |
+| `webhook-customer-created` | `customer.created` | Dispatches webhooks |
+| `handle-digital-order` | `order.placed` | Creates digital order |
+
+---
+
+## Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm start            # Start production server
+npm run test         # Run tests
+```
+
+---
+
+## Documentation
+
+- [Loyalty System](docs/LOYALTY_SYSTEM.md)
+- [Webhooks System](docs/WEBHOOKS_SYSTEM.md)
+- [Digital Products](docs/DIGITAL_PRODUCTS.md)
+- [Bundled Products](docs/BUNDLED_PRODUCTS.md)
+
+---
+
+## License
+
+MIT
