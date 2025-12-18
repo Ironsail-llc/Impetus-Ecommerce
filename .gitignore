@@ -24,3 +24,6 @@ build
 !.yarn/versions
 
 .medusa
+# Claude development tools
+.claude-flow/
+.swarm/
