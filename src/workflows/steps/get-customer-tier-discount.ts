@@ -4,6 +4,7 @@ import { LOYALTY_MODULE } from "../../modules/loyalty"
 
 export type GetCustomerTierDiscountStepInput = {
   customer: { id: string } | null | undefined
+  storeId?: string
 }
 
 export type TierDiscountResult = {
@@ -21,7 +22,7 @@ export type TierDiscountResult = {
  */
 export const getCustomerTierDiscountStep = createStep(
   "get-customer-tier-discount",
-  async ({ customer }: GetCustomerTierDiscountStepInput, { container }): Promise<StepResponse<TierDiscountResult>> => {
+  async ({ customer, storeId }: GetCustomerTierDiscountStepInput, { container }): Promise<StepResponse<TierDiscountResult>> => {
     // No customer = no discount
     if (!customer?.id) {
       return new StepResponse({
@@ -36,8 +37,11 @@ export const getCustomerTierDiscountStep = createStep(
       LOYALTY_MODULE
     )
 
+    // Use provided storeId or default
+    const effectiveStoreId = storeId || "default"
+
     // Get customer's current tier
-    const tier = await loyaltyModuleService.getCustomerTier(customer.id)
+    const tier = await loyaltyModuleService.getCustomerTier(customer.id, effectiveStoreId)
 
     if (!tier || tier.discount_percent <= 0) {
       return new StepResponse({

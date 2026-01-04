@@ -77,6 +77,7 @@ export default async function birthdayBonusJob(container: MedusaContainer) {
           // Award birthday bonus
           await loyaltyService.earnPoints(
             account.customer_id,
+            "default",
             bonusAmount,
             TRANSACTION_TYPES.BIRTHDAY_BONUS,
             "Happy Birthday! Enjoy your bonus points!",

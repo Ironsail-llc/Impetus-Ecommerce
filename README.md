@@ -10,6 +10,8 @@ A feature-rich e-commerce platform built on Medusa v2 with custom modules for lo
 | **Webhooks** | HMAC-signed webhook delivery with retries and dead letter queue |
 | **Digital Products** | Sell and deliver downloadable content with secure downloads |
 | **Bundled Products** | Create product bundles with multiple items |
+| **Patient Access** | 3-Tier access control (Visitor/User/Patient) with product gating |
+| **Multi-Tenancy** | White-label support with store-specific configurations |
 
 ---
 
@@ -18,12 +20,15 @@ A feature-rich e-commerce platform built on Medusa v2 with custom modules for lo
 ### Prerequisites
 
 - Node.js 20+
-- PostgreSQL database
+- PostgreSQL database (or Docker)
 - npm or yarn
+- Docker (optional, for running services)
 
 ### Installation
 
 ```bash
+# Start required services (Postgres, Redis)
+docker compose up -d
 # Clone and install dependencies
 git clone <repository>
 cd Impetus-Ecommerce
@@ -267,6 +272,10 @@ npm run test         # Run tests
 - [Webhooks System](docs/WEBHOOKS_SYSTEM.md)
 - [Digital Products](docs/DIGITAL_PRODUCTS.md)
 - [Bundled Products](docs/BUNDLED_PRODUCTS.md)
+- [Patient Access & Gating](docs/PATIENT_ACCESS_SYSTEM.md)
+- [NMI Payment Integration](docs/NMI_PAYMENT_INTEGRATION.md)
+- [Multi-Tenancy Guide](docs/MULTI_TENANCY_GUIDE.md)
+- [SEO & Analytics](docs/SEO_AND_ANALYTICS.md)
 
 ---
 

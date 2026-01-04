@@ -22,21 +22,39 @@ module.exports = defineConfig({
       resolve: "./src/modules/webhooks",
     },
     {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/nmi-payment",
+            id: "nmi",
+            options: {
+              security_key: process.env.NMI_SECURITY_KEY,
+              public_key: process.env.NEXT_PUBLIC_NMI_PUBLIC_KEY,
+            },
+          },
+        ],
+      },
+    },
+    {
       resolve: "./src/modules/bundled-product",
     },
     {
       resolve: "./src/modules/digital-product",
     },
     {
-      resolve: "@medusajs/medusa/fulfillment",
-      options: {
-        providers: [
-          {
-            resolve: "./src/modules/digital-product-fulfillment",
-            id: "digital",
-          },
-        ],
-      },
+      resolve: "./src/modules/blog",
     },
+    // {
+    //   resolve: "@medusajs/medusa/fulfillment",
+    //   options: {
+    //     providers: [
+    //       {
+    //         resolve: "./src/modules/digital-product-fulfillment",
+    //         id: "digital",
+    //       },
+    //     ],
+    //   },
+    // },
   ],
 })

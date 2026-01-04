@@ -31,7 +31,7 @@ export async function GET(
   const pointsValue = account.balance / redemptionRate
 
   // Get recent transactions
-  const transactions = await loyaltyService.getTransactionHistory(customerId, 20)
+  const transactions = await loyaltyService.getTransactionHistory(customerId, "default", 20)
 
   res.json({
     account: {

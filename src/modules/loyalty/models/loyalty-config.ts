@@ -18,7 +18,22 @@ import { model } from "@medusajs/framework/utils"
 const LoyaltyConfig = model.define("loyalty_config", {
   id: model.id().primaryKey(),
   category: model.text(),
-  key: model.text().unique("IDX_LOYALTY_CONFIG_KEY"),
+  store_id: model.text(),
+  key: model.text(), // Unique constraint handled by compound index in migration
+  // However, for the purpose of the model definition, adding the field is the primary step.
+  // Wait, if I keep .unique("IDX...") on key, it enforces global uniqueness. I should REMOVE .unique() here and handle it in migration? 
+  // Or is there a way? 
+  // Reviewing Medusa docs mental model: .unique() creates a unique constraint. 
+  // If we want (key, store_id) unique, we usually do it in migration. 
+  // But if I leave .unique() on key, it stays globally unique. 
+  // I must remove .unique("IDX_LOYALTY_CONFIG_KEY") from key property in the DML IF I want to convert it to compound.
+  // But wait, the DML defines the schema. 
+  // Let's look at how I can define compound indices. 
+  // In `model.define`, we can pass indexes? No, it's properties.
+  // For now, I will remove .unique() from key and add store_id. I will rely on the migration to add the compound unique constraint.
+  // Actually, keeping strict schema in model is good. 
+  // I'll add store_id and remove the simple unique constraint from key.
+
   value: model.json(),
   value_type: model.text().default("string"),
   description: model.text().nullable(),

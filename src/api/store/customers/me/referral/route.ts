@@ -144,7 +144,8 @@ export async function POST(
   try {
     const referral = await loyaltyService.processReferralSignup(
       referral_code.trim().toUpperCase(),
-      customerId
+      customerId,
+      "default"
     )
 
     if (!referral) {

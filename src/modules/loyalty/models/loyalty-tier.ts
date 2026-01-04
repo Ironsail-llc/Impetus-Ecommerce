@@ -10,6 +10,7 @@ import { model } from "@medusajs/framework/utils"
  */
 const LoyaltyTier = model.define("loyalty_tier", {
   id: model.id().primaryKey(),
+  store_id: model.text(),
   name: model.text(),
   sort_order: model.number().default(0),
   threshold: model.number().default(0), // Lifetime points needed to reach this tier

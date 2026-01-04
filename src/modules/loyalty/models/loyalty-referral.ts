@@ -14,6 +14,7 @@ import { model } from "@medusajs/framework/utils"
  */
 const LoyaltyReferral = model.define("loyalty_referral", {
   id: model.id().primaryKey(),
+  store_id: model.text(),
   referrer_account_id: model.text(),
   referee_account_id: model.text().nullable(),
   referral_code: model.text(),

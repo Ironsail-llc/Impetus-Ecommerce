@@ -19,7 +19,8 @@ import { model } from "@medusajs/framework/utils"
  */
 const NotificationSetting = model.define("loyalty_notification_setting", {
   id: model.id().primaryKey(),
-  event_type: model.text().unique("IDX_NOTIFICATION_EVENT_TYPE"),
+  store_id: model.text(),
+  event_type: model.text(),
   display_name: model.text(),
   email_enabled: model.boolean().default(true),
   sms_enabled: model.boolean().default(false),

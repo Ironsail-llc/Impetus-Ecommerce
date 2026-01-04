@@ -19,6 +19,7 @@ import { model } from "@medusajs/framework/utils"
  */
 const LoyaltyTransaction = model.define("loyalty_transaction", {
   id: model.id().primaryKey(),
+  store_id: model.text(),
   account_id: model.text(),
   type: model.text(),
   amount: model.number(),

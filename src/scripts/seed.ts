@@ -1,4 +1,6 @@
 import { CreateInventoryLevelInput, ExecArgs } from "@medusajs/framework/types";
+import seedVIPProgram from "./seed-vip-program";
+
 import {
   ContainerRegistrationKeys,
   Modules,
@@ -19,7 +21,10 @@ import {
   linkSalesChannelsToStockLocationWorkflow,
   updateStoresStep,
   updateStoresWorkflow,
+  createCustomerGroupsWorkflow,
 } from "@medusajs/medusa/core-flows";
+
+
 import {
   createWorkflow,
   transform,
@@ -61,8 +66,34 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const fulfillmentModuleService = container.resolve(Modules.FULFILLMENT);
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
+  const customerModuleService = container.resolve(Modules.CUSTOMER);
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const CONFIG = {
+    store: {
+      name: "Impetus Store",
+      currencies: [
+        { code: "usd", is_default: true },
+        // { code: "eur", is_default: false }, // Optional: Add back if needed
+      ],
+    },
+    region: {
+      name: "United States",
+      currency_code: "usd",
+      countries: ["us", "ca"],
+      payment_providers: ["pp_system_default"],
+    },
+    location: {
+      name: "US Warehouse",
+      city: "New York",
+      country_code: "US",
+    },
+    fulfillment: {
+      name: "North America Delivery",
+    },
+  };
+
+  const activeCountries = CONFIG.region.countries; // ["us", "ca"]
+
 
   logger.info("Seeding store data...");
   const [store] = await storeModuleService.listStores();
@@ -89,15 +120,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
   await updateStoreCurrencies(container).run({
     input: {
       store_id: store.id,
-      supported_currencies: [
-        {
-          currency_code: "eur",
-          is_default: true,
-        },
-        {
-          currency_code: "usd",
-        },
-      ],
+      supported_currencies: CONFIG.store.currencies.map((c) => ({
+        currency_code: c.code,
+        is_default: c.is_default
+      })),
     },
   });
 
@@ -105,33 +131,75 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       selector: { id: store.id },
       update: {
+        name: CONFIG.store.name,
         default_sales_channel_id: defaultSalesChannel[0].id,
+        metadata: {
+          nmi_security_key: process.env.NMI_SECURITY_KEY || "dummy_key_us",
+          nmi_public_key: process.env.NEXT_PUBLIC_NMI_PUBLIC_KEY || "dummy_pub_us"
+        }
       },
     },
   });
+
+
+  // SEED CUSTOMER GROUPS
+  logger.info("Seeding customer groups...");
+  // Check if group exists first to avoid errors on re-seed
+  const existingGroups = await customerModuleService.listCustomerGroups({ name: "Patients" });
+  if (existingGroups.length === 0) {
+    await customerModuleService.createCustomerGroups({
+      name: "Patients",
+      metadata: {
+        is_vip: true,
+      },
+    });
+  }
+  logger.info("Finished seeding customer groups.");
+
+  // SEED LOYALTY FOR MAIN STORE
+  await seedVIPProgram({ container }, store.id);
+
+
   logger.info("Seeding region data...");
-  const { result: regionResult } = await createRegionsWorkflow(container).run({
-    input: {
-      regions: [
-        {
-          name: "Europe",
-          currency_code: "eur",
-          countries,
-          payment_providers: ["pp_system_default"],
-        },
-      ],
-    },
-  });
+  let regionResult;
+  try {
+    const { result } = await createRegionsWorkflow(container).run({
+      input: {
+        regions: [
+          {
+            name: CONFIG.region.name,
+            currency_code: CONFIG.region.currency_code,
+            countries: activeCountries,
+            payment_providers: CONFIG.region.payment_providers,
+          },
+        ],
+      },
+    });
+    regionResult = result;
+  } catch (e) {
+    logger.warn(`Skipping region creation: ${e.message}`);
+    // Try to fetch existing region
+    const regionService = container.resolve("region")
+    const regions = await regionService.listRegions({ currency_code: CONFIG.region.currency_code })
+    regionResult = regions
+  }
   const region = regionResult[0];
+
+
+
   logger.info("Finished seeding regions.");
 
   logger.info("Seeding tax regions...");
-  await createTaxRegionsWorkflow(container).run({
-    input: countries.map((country_code) => ({
-      country_code,
-      provider_id: "tp_system",
-    })),
-  });
+  try {
+    await createTaxRegionsWorkflow(container).run({
+      input: activeCountries.map((country_code) => ({
+        country_code,
+        provider_id: "tp_system",
+      })),
+    });
+  } catch (e) {
+    logger.warn(`Skipping tax region creation: ${e.message}`);
+  }
   logger.info("Finished seeding tax regions.");
 
   logger.info("Seeding stock location data...");
@@ -141,10 +209,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: CONFIG.location.name,
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
+            city: CONFIG.location.city,
+            country_code: CONFIG.location.country_code,
             address_1: "",
           },
         },
@@ -192,45 +260,22 @@ export default async function seedDemoData({ container }: ExecArgs) {
     shippingProfile = shippingProfileResult[0];
   }
 
-  const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
-    type: "shipping",
-    service_zones: [
-      {
-        name: "Europe",
-        geo_zones: [
-          {
-            country_code: "gb",
-            type: "country",
-          },
-          {
-            country_code: "de",
-            type: "country",
-          },
-          {
-            country_code: "dk",
-            type: "country",
-          },
-          {
-            country_code: "se",
-            type: "country",
-          },
-          {
-            country_code: "fr",
-            type: "country",
-          },
-          {
-            country_code: "es",
-            type: "country",
-          },
-          {
-            country_code: "it",
-            type: "country",
-          },
-        ],
-      },
-    ],
-  });
+  let fulfillmentSet = (await fulfillmentModuleService.listFulfillmentSets({ name: CONFIG.fulfillment.name }))[0];
+  if (!fulfillmentSet) {
+    fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
+      name: CONFIG.fulfillment.name,
+      type: "shipping",
+      service_zones: [
+        {
+          name: CONFIG.region.name,
+          geo_zones: activeCountries.map((cc) => ({
+            country_code: cc,
+            type: "country" as const,
+          })),
+        },
+      ],
+    });
+  }
 
   await link.create({
     [Modules.STOCK_LOCATION]: {
@@ -259,10 +304,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
             currency_code: "usd",
             amount: 10,
           },
-          {
-            currency_code: "eur",
-            amount: 10,
-          },
+
           {
             region_id: region.id,
             amount: 10,
@@ -297,10 +339,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
             currency_code: "usd",
             amount: 10,
           },
-          {
-            currency_code: "eur",
-            amount: 10,
-          },
+
           {
             region_id: region.id,
             amount: 10,
@@ -875,6 +914,50 @@ export default async function seedDemoData({ container }: ExecArgs) {
             },
           ],
         },
+        {
+          title: "Restricted Medusa RX",
+          category_ids: [],
+          description: "This is a restricted product for patients only.",
+          handle: "restricted-rx",
+          weight: 400,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          // tags: [{ value: "Restricted" }], 
+          tags: [
+            { value: "Restricted" }
+          ],
+          images: [
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+            },
+          ],
+          options: [
+            {
+              title: "Dose",
+              values: ["10mg", "20mg"],
+            },
+          ],
+          variants: [
+            {
+              title: "10mg",
+              sku: "RX-10MG",
+              options: {
+                Dose: "10mg",
+              },
+              prices: [
+                {
+                  amount: 100,
+                  currency_code: "usd",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
       ],
     },
   });
@@ -904,4 +987,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   });
 
   logger.info("Finished seeding inventory levels data.");
+
+  await seedVIPProgram({ container }, "default");
+  logger.info("Finished seeding VIP program data.");
 }

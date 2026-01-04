@@ -9,6 +9,7 @@ type StepInput = {
   customer_id: string
   order_total: number // Order total in currency (for min_purchase trigger)
   order_id?: string
+  storeId?: string
 }
 
 type StepResult = {
@@ -42,8 +43,10 @@ export const completePendingReferralsStep = createStep(
   async (input: StepInput, { container }): Promise<StepResponse<StepResult, CompensationData>> => {
     const loyaltyService: LoyaltyModuleService = container.resolve(LOYALTY_MODULE)
 
+    const effectiveStoreId = input.storeId || "default"
+
     // Get the referral trigger configuration
-    const referralTrigger = await loyaltyService.getConfig<string>("referral_trigger")
+    const referralTrigger = await loyaltyService.getConfig<string>("referral_trigger", effectiveStoreId)
 
     // Complete pending referrals based on trigger
     const result = await loyaltyService.completePendingReferralsForReferee(

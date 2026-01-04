@@ -92,6 +92,7 @@ export async function POST(
       name,
       url,
       events,
+      store_id: "default",
       description,
       headers,
       max_retries,

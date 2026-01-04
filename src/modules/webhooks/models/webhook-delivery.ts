@@ -8,6 +8,7 @@ import { model } from "@medusajs/framework/utils"
  */
 const WebhookDelivery = model.define("webhook_delivery", {
   id: model.id().primaryKey(),
+  store_id: model.text().index("IDX_WEBHOOK_DELIVERY_STORE"),
   endpoint_id: model.text().index("IDX_WEBHOOK_DELIVERY_ENDPOINT"),
   event_type: model.text().index("IDX_WEBHOOK_DELIVERY_EVENT"),
 

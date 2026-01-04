@@ -18,6 +18,7 @@ const LoyaltyReward = model.define("loyalty_reward", {
   id: model.id().primaryKey(),
 
   // Basic info
+  store_id: model.text(),
   name: model.text(),
   description: model.text().nullable(),
   image_url: model.text().nullable(),

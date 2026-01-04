@@ -107,6 +107,7 @@ class WebhooksModuleService extends MedusaService({
     name: string
     url: string
     events: string[]
+    store_id: string // Added store_id
     description?: string
     headers?: Record<string, string>
     max_retries?: number
@@ -123,6 +124,7 @@ class WebhooksModuleService extends MedusaService({
 
     const endpoint = await this.createWebhookEndpoints({
       name: data.name,
+      store_id: data.store_id, // Save store_id
       url: data.url,
       secret,
       events: data.events,
@@ -141,11 +143,14 @@ class WebhooksModuleService extends MedusaService({
   }
 
   /**
-   * Get all active endpoints for a specific event
+   * Get all active endpoints for a specific event and store
    */
-  async getEndpointsForEvent(eventType: string): Promise<WebhookEndpointType[]> {
+  async getEndpointsForEvent(eventType: string, storeId: string): Promise<WebhookEndpointType[]> {
     const allEndpoints = await this.listWebhookEndpoints({
-      where: { is_active: true },
+      where: {
+        is_active: true,
+        store_id: storeId // Filter by store
+      },
     })
 
     // Filter endpoints that subscribe to this event
@@ -210,6 +215,7 @@ class WebhooksModuleService extends MedusaService({
 
     const delivery = await this.createWebhookDeliveries({
       endpoint_id: endpointId,
+      store_id: endpoint.store_id, // Inherit store_id from endpoint
       event_type: eventType,
       payload: payload as Record<string, unknown>,
       payload_hash: payloadHash,
@@ -280,7 +286,9 @@ class WebhooksModuleService extends MedusaService({
         request_url: endpoint.url,
         request_headers: this.sanitizeHeaders(headers),
         response_status: response.status,
-        response_body: responseBody.substring(0, 10000), // Limit size
+        response_body: typeof responseBody === 'string'
+          ? this.redactSensitiveData(responseBody.substring(0, 10000)) as string
+          : responseBody, // Limit size and redact
         response_time_ms: responseTime,
         success: response.ok,
         error_message: response.ok ? null : `HTTP ${response.status}`,
@@ -293,7 +301,9 @@ class WebhooksModuleService extends MedusaService({
           id: delivery.id,
           status: DELIVERY_STATUS.SUCCESS,
           response_status: response.status,
-          response_body: responseBody.substring(0, 10000),
+          response_body: typeof responseBody === 'string'
+            ? this.redactSensitiveData(responseBody.substring(0, 10000)) as string
+            : responseBody,
           response_time_ms: responseTime,
           completed_at: new Date(),
         })
@@ -310,7 +320,9 @@ class WebhooksModuleService extends MedusaService({
             id: delivery.id,
             status: DELIVERY_STATUS.FAILED,
             response_status: response.status,
-            response_body: responseBody.substring(0, 10000),
+            response_body: typeof responseBody === 'string'
+              ? this.redactSensitiveData(responseBody.substring(0, 10000)) as string
+              : responseBody,
             response_time_ms: responseTime,
             error_message: `HTTP ${response.status}`,
             error_category: ERROR_CATEGORY.HTTP_ERROR,
@@ -322,7 +334,9 @@ class WebhooksModuleService extends MedusaService({
             id: delivery.id,
             status: DELIVERY_STATUS.DEAD_LETTER,
             response_status: response.status,
-            response_body: responseBody.substring(0, 10000),
+            response_body: typeof responseBody === 'string'
+              ? this.redactSensitiveData(responseBody.substring(0, 10000)) as string
+              : responseBody,
             response_time_ms: responseTime,
             error_message: `HTTP ${response.status} - max retries exceeded or non-retryable`,
             error_category: ERROR_CATEGORY.HTTP_ERROR,
@@ -384,13 +398,14 @@ class WebhooksModuleService extends MedusaService({
   }
 
   /**
-   * Dispatch webhook to all subscribed endpoints
+   * Dispatch webhook to all subscribed endpoints for a store
    */
   async dispatchToAllEndpoints(
     eventType: string,
-    payload: object
+    payload: object,
+    storeId: string = "default"
   ): Promise<{ total: number; successful: number; failed: number }> {
-    const endpoints = await this.getEndpointsForEvent(eventType)
+    const endpoints = await this.getEndpointsForEvent(eventType, storeId)
 
     let successful = 0
     let failed = 0
@@ -462,6 +477,51 @@ class WebhooksModuleService extends MedusaService({
   // =====================================
 
   /**
+   * Redact sensitive PII from data objects or strings
+   */
+  private redactSensitiveData(data: any): any {
+    if (!data) return data
+
+    const SENSITIVE_KEYS = [
+      "email", "phone", "password", "token", "secret",
+      "credit_card", "cc_number", "cvv", "ssn", "dob", "birth_date",
+      "medical_history", "diagnosis", "medication"
+    ]
+
+    // Handle string (try to parse JSON or regex replace)
+    if (typeof data === "string") {
+      try {
+        const parsed = JSON.parse(data)
+        return JSON.stringify(this.redactSensitiveData(parsed))
+      } catch (e) {
+        // If not JSON, simple regex replacement for potential patterns could go here
+        // For now, return as is if not JSON, or maybe truncate if too long?
+        return data
+      }
+    }
+
+    // Handle array
+    if (Array.isArray(data)) {
+      return data.map(item => this.redactSensitiveData(item))
+    }
+
+    // Handle object
+    if (typeof data === "object") {
+      const redacted = { ...data }
+      for (const key of Object.keys(redacted)) {
+        if (SENSITIVE_KEYS.some(k => key.toLowerCase().includes(k))) {
+          redacted[key] = "***REDACTED***"
+        } else if (typeof redacted[key] === "object") {
+          redacted[key] = this.redactSensitiveData(redacted[key])
+        }
+      }
+      return redacted
+    }
+
+    return data
+  }
+
+  /**
    * Determine if a delivery should be retried based on status code
    */
   private shouldRetry(
@@ -510,7 +570,8 @@ class WebhooksModuleService extends MedusaService({
       sanitized["Authorization"] = "[REDACTED]"
     }
 
-    return sanitized
+    // Additional generic redaction for headers
+    return this.redactSensitiveData(sanitized)
   }
 
   // =====================================

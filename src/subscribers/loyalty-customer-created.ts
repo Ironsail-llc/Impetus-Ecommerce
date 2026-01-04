@@ -50,7 +50,8 @@ export default async function customerCreatedHandler({
       // Process the referral signup
       const referral = await loyaltyService.processReferralSignup(
         normalizedCode,
-        data.id
+        data.id,
+        "default"
       )
 
       if (referral) {
@@ -81,6 +82,7 @@ export default async function customerCreatedHandler({
     if (signupBonusEnabled && signupBonusAmount > 0) {
       await loyaltyService.earnPoints(
         data.id,
+        "default",
         signupBonusAmount,
         "signup_bonus",
         "Welcome signup bonus"

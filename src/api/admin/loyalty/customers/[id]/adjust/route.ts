@@ -59,6 +59,7 @@ export async function POST(
   if (amount > 0) {
     updatedAccount = await loyaltyService.earnPoints(
       customerId,
+      "default",
       amount,
       TRANSACTION_TYPES.ADMIN_ADJUSTMENT,
       description,

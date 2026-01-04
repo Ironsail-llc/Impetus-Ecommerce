@@ -92,7 +92,7 @@ export async function GET(
   const canRedeem = account.balance >= minRedemption
 
   // Get recent transactions
-  const transactions = await loyaltyService.getTransactionHistory(customerId, 10)
+  const transactions = await loyaltyService.getTransactionHistory(customerId, "default", 10)
 
   // Get config values for frontend
   const earnRate = await loyaltyService.getConfig<number>("earn_rate")

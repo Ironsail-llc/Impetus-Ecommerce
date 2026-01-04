@@ -15,6 +15,7 @@ const CustomerReward = model.define("customer_reward", {
   id: model.id().primaryKey(),
 
   // Link to customer's loyalty account
+  store_id: model.text(),
   account_id: model.text(),
 
   // Link to the reward definition

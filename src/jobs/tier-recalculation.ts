@@ -24,6 +24,13 @@ export default async function tierRecalculationJob(container: MedusaContainer) {
   const loyaltyService: LoyaltyModuleService = container.resolve(LOYALTY_MODULE)
   const notificationManager = createNotificationManager(container)
 
+  // Workaround for Node.js setTimeout limit (approx 24 days):
+  // We schedule daily but only run logic on the 1st
+  const today = new Date()
+  if (today.getDate() !== 1) {
+    return
+  }
+
   // Check if tier downgrade is enabled
   const downgradeEnabled = await loyaltyService.getConfig<boolean>("tier_downgrade_enabled")
   if (!downgradeEnabled) {
@@ -339,6 +346,6 @@ async function sendDowngradeNotification(
  */
 export const config = {
   name: "tier-recalculation",
-  // Run monthly on the 1st at 3 AM
-  schedule: "0 3 1 * *",
+  // Run daily at 3 AM (checked for 1st of month inside logic)
+  schedule: "0 3 * * *",
 }

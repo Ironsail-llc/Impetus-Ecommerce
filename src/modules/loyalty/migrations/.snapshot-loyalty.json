@@ -15,6 +15,15 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "account_id": {
           "name": "account_id",
           "type": "text",
@@ -228,6 +237,15 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "customer_id": {
           "name": "customer_id",
           "type": "text",
@@ -351,24 +369,6 @@
       "schema": "public",
       "indexes": [
         {
-          "keyName": "IDX_LOYALTY_ACCOUNT_CUSTOMER",
-          "columnNames": [],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_LOYALTY_ACCOUNT_CUSTOMER\" ON \"loyalty_account\" (\"customer_id\") WHERE deleted_at IS NULL"
-        },
-        {
-          "keyName": "IDX_LOYALTY_ACCOUNT_REFERRAL",
-          "columnNames": [],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_LOYALTY_ACCOUNT_REFERRAL\" ON \"loyalty_account\" (\"referral_code\") WHERE deleted_at IS NULL"
-        },
-        {
           "keyName": "IDX_loyalty_account_deleted_at",
           "columnNames": [],
           "composite": false,
@@ -405,6 +405,15 @@
         },
         "category": {
           "name": "category",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -495,15 +504,6 @@
       "schema": "public",
       "indexes": [
         {
-          "keyName": "IDX_LOYALTY_CONFIG_KEY",
-          "columnNames": [],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_LOYALTY_CONFIG_KEY\" ON \"loyalty_config\" (\"key\") WHERE deleted_at IS NULL"
-        },
-        {
           "keyName": "IDX_loyalty_config_deleted_at",
           "columnNames": [],
           "composite": false,
@@ -531,6 +531,15 @@
       "columns": {
         "id": {
           "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -630,15 +639,6 @@
       "name": "loyalty_notification_setting",
       "schema": "public",
       "indexes": [
-        {
-          "keyName": "IDX_NOTIFICATION_EVENT_TYPE",
-          "columnNames": [],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_NOTIFICATION_EVENT_TYPE\" ON \"loyalty_notification_setting\" (\"event_type\") WHERE deleted_at IS NULL"
-        },
         {
           "keyName": "IDX_loyalty_notification_setting_deleted_at",
           "columnNames": [],
@@ -766,6 +766,15 @@
       "columns": {
         "id": {
           "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -923,6 +932,15 @@
       "columns": {
         "id": {
           "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -1187,6 +1205,15 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "name": {
           "name": "name",
           "type": "text",
@@ -1309,6 +1336,15 @@
       "columns": {
         "id": {
           "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,

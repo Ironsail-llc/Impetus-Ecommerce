@@ -10,18 +10,23 @@ export type GetCartLoyaltyPromoAmountStepInput = {
     customer: CustomerDTO
     promotions?: PromotionDTO[]
     total: number
+    sales_channel_id?: string
   }
+  storeId?: string
 }
 
 export const getCartLoyaltyPromoAmountStep = createStep(
   "get-cart-loyalty-promo-amount",
-  async ({ cart }: GetCartLoyaltyPromoAmountStepInput, { container }) => {
+  async ({ cart, storeId }: GetCartLoyaltyPromoAmountStepInput, { container }) => {
     const loyaltyModuleService: LoyaltyModuleService = container.resolve(
       LOYALTY_MODULE
     )
 
+    // Use provided storeId, sales_channel_id, or default
+    const effectiveStoreId = storeId || cart.sales_channel_id || "default"
+
     // Get customer's loyalty account (uses new account-based system)
-    const account = await loyaltyModuleService.getOrCreateAccount(cart.customer.id)
+    const account = await loyaltyModuleService.getOrCreateAccount(cart.customer.id, effectiveStoreId)
 
     if (account.balance <= 0) {
       throw new MedusaError(
@@ -31,7 +36,7 @@ export const getCartLoyaltyPromoAmountStep = createStep(
     }
 
     // Check minimum redemption requirement
-    const minRedemption = await loyaltyModuleService.getConfig<number>("min_redemption")
+    const minRedemption = await loyaltyModuleService.getConfig<number>("min_redemption", effectiveStoreId)
     if (account.balance < minRedemption) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
@@ -41,12 +46,13 @@ export const getCartLoyaltyPromoAmountStep = createStep(
 
     // Calculate the discount value from points
     const pointsDiscount = await loyaltyModuleService.calculateDiscountFromPoints(
-      account.balance
+      account.balance,
+      effectiveStoreId
     )
 
     // Apply maximum redemption limits if configured
-    const maxType = await loyaltyModuleService.getConfig<string>("max_redemption_type")
-    const maxValue = await loyaltyModuleService.getConfig<number>("max_redemption_value")
+    const maxType = await loyaltyModuleService.getConfig<string>("max_redemption_type", effectiveStoreId)
+    const maxValue = await loyaltyModuleService.getConfig<number>("max_redemption_value", effectiveStoreId)
 
     let maxAllowedDiscount = cart.total
     if (maxType === "percent" && maxValue > 0) {

@@ -86,7 +86,7 @@ export async function POST(
   }
 
   try {
-    const customerReward = await loyaltyService.redeemReward(customerId, reward_id)
+    const customerReward = await loyaltyService.redeemReward(customerId, "default", reward_id)
 
     // Get reward details for response
     const reward = await loyaltyService.retrieveLoyaltyReward(reward_id)

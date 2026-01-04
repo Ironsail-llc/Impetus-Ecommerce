@@ -30,6 +30,7 @@ export async function GET(
   // Get customer's rewards
   const customerRewards = await loyaltyService.getCustomerRewards(
     customerId,
+    "default",
     status === "all" ? undefined : status
   )
 

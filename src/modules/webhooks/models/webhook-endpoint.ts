@@ -8,6 +8,7 @@ import { model } from "@medusajs/framework/utils"
  */
 const WebhookEndpoint = model.define("webhook_endpoint", {
   id: model.id().primaryKey(),
+  store_id: model.text(),
   name: model.text(),
   url: model.text(),
   secret: model.text(),
