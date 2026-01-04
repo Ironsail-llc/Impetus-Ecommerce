@@ -605,179 +605,179 @@ export default async function seedDemoData({ container }: ExecArgs) {
             },
           ],
         },
-      ],  {
-    title: "Medusa Shorts",
-    category_ids: [
-      categoryResult.find((cat) => cat.name === "Merch")!.id,
-    ],
-    description:
-      "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
-    handle: "shorts",
-    weight: 400,
-    status: ProductStatus.PUBLISHED,
-    shipping_profile_id: shippingProfile.id,
-    images: [
-      {
-        url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
-      },
-      {
-        url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
-      },
-    ],
-    options: [
-      {
-        title: "Size",
-        values: ["S", "M", "L", "XL"],
-      },
-    ],
-    variants: [
-      {
-        title: "S",
-        sku: "SHORTS-S",
-        options: {
-          Size: "S",
-        },
-        prices: [
-          {
-            amount: 10,
-            currency_code: "eur",
-          },
-          {
-            amount: 15,
-            currency_code: "usd",
-          },
-        ],
-      },
-      {
-        title: "M",
-        sku: "SHORTS-M",
-        options: {
-          Size: "M",
-        },
-        prices: [
-          {
-            amount: 10,
-            currency_code: "eur",
-          },
-          {
-            amount: 15,
-            currency_code: "usd",
-          },
-        ],
-      },
-      {
-        title: "L",
-        sku: "SHORTS-L",
-        options: {
-          Size: "L",
-        },
-        prices: [
-          {
-            amount: 10,
-            currency_code: "eur",
-          },
-          {
-            amount: 15,
-            currency_code: "usd",
-          },
-        ],
-      },
-      {
-        title: "XL",
-        sku: "SHORTS-XL",
-        options: {
-          Size: "XL",
-        },
-        prices: [
-          {
-            amount: 10,
-            currency_code: "eur",
-          },
-          {
-            amount: 15,
-            currency_code: "usd",
-          },
-        ],
-      },
-    ],
-    sales_channels: [
-      {
-        id: defaultSalesChannel[0].id,
-      },
-    ],
-  },
-    {
-      title: "Restricted Medusa RX",
-      category_ids: [],
-      description: "This is a restricted product for patients only.",
-      handle: "restricted-rx",
-      weight: 400,
-      status: ProductStatus.PUBLISHED,
-      shipping_profile_id: shippingProfile.id,
-      // Note: Tags are handled separately after product creation
-      // tags: [{ value: "Restricted" }],
-      images: [
         {
-          url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-        },
-      ],
-      options: [
-        {
-          title: "Dose",
-          values: ["10mg", "20mg"],
-        },
-      ],
-      variants: [
-        {
-          title: "10mg",
-          sku: "RX-10MG",
-          options: {
-            Dose: "10mg",
-          },
-          prices: [
+          title: "Medusa Shorts",
+          category_ids: [
+            categoryResult.find((cat) => cat.name === "Merch")!.id,
+          ],
+          description:
+            "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
+          handle: "shorts",
+          weight: 400,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          images: [
             {
-              amount: 100,
-              currency_code: "usd",
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
+            },
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
+            },
+          ],
+          options: [
+            {
+              title: "Size",
+              values: ["S", "M", "L", "XL"],
+            },
+          ],
+          variants: [
+            {
+              title: "S",
+              sku: "SHORTS-S",
+              options: {
+                Size: "S",
+              },
+              prices: [
+                {
+                  amount: 10,
+                  currency_code: "eur",
+                },
+                {
+                  amount: 15,
+                  currency_code: "usd",
+                },
+              ],
+            },
+            {
+              title: "M",
+              sku: "SHORTS-M",
+              options: {
+                Size: "M",
+              },
+              prices: [
+                {
+                  amount: 10,
+                  currency_code: "eur",
+                },
+                {
+                  amount: 15,
+                  currency_code: "usd",
+                },
+              ],
+            },
+            {
+              title: "L",
+              sku: "SHORTS-L",
+              options: {
+                Size: "L",
+              },
+              prices: [
+                {
+                  amount: 10,
+                  currency_code: "eur",
+                },
+                {
+                  amount: 15,
+                  currency_code: "usd",
+                },
+              ],
+            },
+            {
+              title: "XL",
+              sku: "SHORTS-XL",
+              options: {
+                Size: "XL",
+              },
+              prices: [
+                {
+                  amount: 10,
+                  currency_code: "eur",
+                },
+                {
+                  amount: 15,
+                  currency_code: "usd",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
+            },
+          ],
+        },
+        {
+          title: "Restricted Medusa RX",
+          category_ids: [],
+          description: "This is a restricted product for patients only.",
+          handle: "restricted-rx",
+          weight: 400,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          // Note: Tags are handled separately after product creation
+          // tags: [{ value: "Restricted" }],
+          images: [
+            {
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+            },
+          ],
+          options: [
+            {
+              title: "Dose",
+              values: ["10mg", "20mg"],
+            },
+          ],
+          variants: [
+            {
+              title: "10mg",
+              sku: "RX-10MG",
+              options: {
+                Dose: "10mg",
+              },
+              prices: [
+                {
+                  amount: 100,
+                  currency_code: "usd",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel[0].id,
             },
           ],
         },
       ],
-      sales_channels: [
-        {
-          id: defaultSalesChannel[0].id,
-        },
-      ],
-    },
-      ],
     },
   });
-logger.info("Finished seeding product data.");
+  logger.info("Finished seeding product data.");
 
-logger.info("Seeding inventory levels.");
+  logger.info("Seeding inventory levels.");
 
-const { data: inventoryItems } = await query.graph({
-  entity: "inventory_item",
-  fields: ["id"],
-});
+  const { data: inventoryItems } = await query.graph({
+    entity: "inventory_item",
+    fields: ["id"],
+  });
 
-const inventoryLevels: CreateInventoryLevelInput[] = [];
-for (const inventoryItem of inventoryItems) {
-  const inventoryLevel = {
-    location_id: stockLocation.id,
-    stocked_quantity: 1000000,
-    inventory_item_id: inventoryItem.id,
-  };
-  inventoryLevels.push(inventoryLevel);
-}
+  const inventoryLevels: CreateInventoryLevelInput[] = [];
+  for (const inventoryItem of inventoryItems) {
+    const inventoryLevel = {
+      location_id: stockLocation.id,
+      stocked_quantity: 1000000,
+      inventory_item_id: inventoryItem.id,
+    };
+    inventoryLevels.push(inventoryLevel);
+  }
 
-await createInventoryLevelsWorkflow(container).run({
-  input: {
-    inventory_levels: inventoryLevels,
-  },
-});
+  await createInventoryLevelsWorkflow(container).run({
+    input: {
+      inventory_levels: inventoryLevels,
+    },
+  });
 
-logger.info("Finished seeding inventory levels data.");
+  logger.info("Finished seeding inventory levels data.");
 
-await seedVIPProgram({ container }, "default");
-logger.info("Finished seeding VIP program data.");
+  await seedVIPProgram({ container }, "default");
+  logger.info("Finished seeding VIP program data.");
 }
