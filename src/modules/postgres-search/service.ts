@@ -11,8 +11,8 @@ type InjectedDependencies = {
 export default class PostgresSearchService extends AbstractSearchService {
     protected readonly pgConnection_: any
 
-    constructor(container: InjectedDependencies & { __pg_connection__: any }) {
-        super(container)
+    constructor(container: InjectedDependencies & { __pg_connection__: any }, options: Record<string, unknown>) {
+        super(container, options)
         this.pgConnection_ = container.__pg_connection__
         console.log("PG Connection Type:", this.pgConnection_ ? this.pgConnection_.constructor.name : "NULL")
     }
@@ -47,7 +47,7 @@ export default class PostgresSearchService extends AbstractSearchService {
         return
     }
 
-    async search(indexName: string, query: string, options: Record<string, unknown> = {}): Promise<SearchTypes.ISearchResult> {
+    async search(indexName: string, query: string, options: Record<string, unknown> = {}): Promise<any> {
         const q = query.trim()
 
         // Basic sanitization to prevent SQL injection is handled by parameterized queries, 
