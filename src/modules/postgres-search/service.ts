@@ -9,7 +9,10 @@ type InjectedDependencies = {
 }
 
 export default class PostgresSearchService extends AbstractSearchService {
-    static isDefault = false
+    get isDefault(): boolean {
+        return false
+    }
+
     protected readonly pgConnection_: any
 
     constructor(container: InjectedDependencies & { __pg_connection__: any }, options: Record<string, unknown>) {
