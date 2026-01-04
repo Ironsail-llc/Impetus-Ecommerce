@@ -70,10 +70,9 @@ export default async function seedDemoData({ container }: ExecArgs) {
 
   const CONFIG = {
     store: {
-      name: "Impetus Store",
+      name: "Impetus Health",
       currencies: [
         { code: "usd", is_default: true },
-        // { code: "eur", is_default: false }, // Optional: Add back if needed
       ],
     },
     region: {
@@ -402,19 +401,19 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       product_categories: [
         {
-          name: "Shirts",
+          name: "Supplements",
           is_active: true,
         },
         {
-          name: "Sweatshirts",
+          name: "Wellness",
           is_active: true,
         },
         {
-          name: "Pants",
+          name: "Testing Kits",
           is_active: true,
         },
         {
-          name: "Merch",
+          name: "Bundles",
           is_active: true,
         },
       ],
@@ -425,181 +424,63 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       products: [
         {
-          title: "Medusa T-Shirt",
+          title: "Daily Multivitamin",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Shirts")!.id,
+            categoryResult.find((cat) => cat.name === "Supplements")!.id,
           ],
           description:
-            "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
-          handle: "t-shirt",
-          weight: 400,
+            "Essential daily nutrients to support overall health and vitality. Formulated for optimal absorption.",
+          handle: "daily-multivitamin",
+          weight: 200,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-back.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-back.png",
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png", // TODO: Replace with vitamin image
             },
           ],
           options: [
             {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
-            },
-            {
-              title: "Color",
-              values: ["Black", "White"],
+              title: "Supply",
+              values: ["30 Day", "60 Day", "90 Day"],
             },
           ],
           variants: [
             {
-              title: "S / Black",
-              sku: "SHIRT-S-BLACK",
+              title: "30 Day Supply",
+              sku: "MULTI-30",
               options: {
-                Size: "S",
-                Color: "Black",
+                Supply: "30 Day",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 2999, // $29.99
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "S / White",
-              sku: "SHIRT-S-WHITE",
+              title: "60 Day Supply",
+              sku: "MULTI-60",
               options: {
-                Size: "S",
-                Color: "White",
+                Supply: "60 Day",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 5499, // $54.99
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "M / Black",
-              sku: "SHIRT-M-BLACK",
+              title: "90 Day Supply",
+              sku: "MULTI-90",
               options: {
-                Size: "M",
-                Color: "Black",
+                Supply: "90 Day",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "M / White",
-              sku: "SHIRT-M-WHITE",
-              options: {
-                Size: "M",
-                Color: "White",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L / Black",
-              sku: "SHIRT-L-BLACK",
-              options: {
-                Size: "L",
-                Color: "Black",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L / White",
-              sku: "SHIRT-L-WHITE",
-              options: {
-                Size: "L",
-                Color: "White",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL / Black",
-              sku: "SHIRT-XL-BLACK",
-              options: {
-                Size: "XL",
-                Color: "Black",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL / White",
-              sku: "SHIRT-XL-WHITE",
-              options: {
-                Size: "XL",
-                Color: "White",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 7999, // $79.99
                   currency_code: "usd",
                 },
               ],
@@ -612,95 +493,51 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Medusa Sweatshirt",
+          title: "Sleep Support Complex",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Sweatshirts")!.id,
+            categoryResult.find((cat) => cat.name === "Wellness")!.id,
+            categoryResult.find((cat) => cat.name === "Supplements")!.id,
           ],
           description:
-            "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
-          handle: "sweatshirt",
-          weight: 400,
+            "A natural blend of melatonin, magnesium, and botanicals to promote restful sleep and recovery.",
+          handle: "sleep-support",
+          weight: 150,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-back.png",
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png", // TODO: Replace with sleep aid image
             },
           ],
           options: [
             {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
+              title: "Format",
+              values: ["Capsules", "Gummies"],
             },
           ],
           variants: [
             {
-              title: "S",
-              sku: "SWEATSHIRT-S",
+              title: "Capsules",
+              sku: "SLEEP-CAP",
               options: {
-                Size: "S",
+                Format: "Capsules",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 2499,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "M",
-              sku: "SWEATSHIRT-M",
+              title: "Gummies",
+              sku: "SLEEP-GUM",
               options: {
-                Size: "M",
+                Format: "Gummies",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SWEATSHIRT-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SWEATSHIRT-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 2699,
                   currency_code: "usd",
                 },
               ],
@@ -713,95 +550,50 @@ export default async function seedDemoData({ container }: ExecArgs) {
           ],
         },
         {
-          title: "Medusa Sweatpants",
+          title: "At-Home Testosterone Test",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Pants")!.id,
+            categoryResult.find((cat) => cat.name === "Testing Kits")!.id,
           ],
           description:
-            "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
-          handle: "sweatpants",
-          weight: 400,
+            "Comprehensive at-home hormone panel. Collect your sample in minutes and get results online within days.",
+          handle: "test-kit-testosterone",
+          weight: 300,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           images: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-back.png",
+              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png", // TODO: Replace with kit image
             },
           ],
           options: [
             {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
+              title: "Type",
+              values: ["Basic", "Comprehensive"],
             },
           ],
           variants: [
             {
-              title: "S",
-              sku: "SWEATPANTS-S",
+              title: "Basic Panel",
+              sku: "TEST-T-BASIC",
               options: {
-                Size: "S",
+                Type: "Basic",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 4900,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "M",
-              sku: "SWEATPANTS-M",
+              title: "Comprehensive Panel",
+              sku: "TEST-T-COMP",
               options: {
-                Size: "M",
+                Type: "Comprehensive",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SWEATPANTS-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SWEATPANTS-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 9900, // $99.00
                   currency_code: "usd",
                 },
               ],
@@ -813,179 +605,179 @@ export default async function seedDemoData({ container }: ExecArgs) {
             },
           ],
         },
-        {
-          title: "Medusa Shorts",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Merch")!.id,
-          ],
-          description:
-            "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
-          handle: "shorts",
-          weight: 400,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
-            },
-          ],
-          options: [
-            {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
-            },
-          ],
-          variants: [
-            {
-              title: "S",
-              sku: "SHORTS-S",
-              options: {
-                Size: "S",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "M",
-              sku: "SHORTS-M",
-              options: {
-                Size: "M",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SHORTS-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SHORTS-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
-            },
-          ],
+      ],  {
+    title: "Medusa Shorts",
+    category_ids: [
+      categoryResult.find((cat) => cat.name === "Merch")!.id,
+    ],
+    description:
+      "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
+    handle: "shorts",
+    weight: 400,
+    status: ProductStatus.PUBLISHED,
+    shipping_profile_id: shippingProfile.id,
+    images: [
+      {
+        url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
+      },
+      {
+        url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
+      },
+    ],
+    options: [
+      {
+        title: "Size",
+        values: ["S", "M", "L", "XL"],
+      },
+    ],
+    variants: [
+      {
+        title: "S",
+        sku: "SHORTS-S",
+        options: {
+          Size: "S",
         },
+        prices: [
+          {
+            amount: 10,
+            currency_code: "eur",
+          },
+          {
+            amount: 15,
+            currency_code: "usd",
+          },
+        ],
+      },
+      {
+        title: "M",
+        sku: "SHORTS-M",
+        options: {
+          Size: "M",
+        },
+        prices: [
+          {
+            amount: 10,
+            currency_code: "eur",
+          },
+          {
+            amount: 15,
+            currency_code: "usd",
+          },
+        ],
+      },
+      {
+        title: "L",
+        sku: "SHORTS-L",
+        options: {
+          Size: "L",
+        },
+        prices: [
+          {
+            amount: 10,
+            currency_code: "eur",
+          },
+          {
+            amount: 15,
+            currency_code: "usd",
+          },
+        ],
+      },
+      {
+        title: "XL",
+        sku: "SHORTS-XL",
+        options: {
+          Size: "XL",
+        },
+        prices: [
+          {
+            amount: 10,
+            currency_code: "eur",
+          },
+          {
+            amount: 15,
+            currency_code: "usd",
+          },
+        ],
+      },
+    ],
+    sales_channels: [
+      {
+        id: defaultSalesChannel[0].id,
+      },
+    ],
+  },
+    {
+      title: "Restricted Medusa RX",
+      category_ids: [],
+      description: "This is a restricted product for patients only.",
+      handle: "restricted-rx",
+      weight: 400,
+      status: ProductStatus.PUBLISHED,
+      shipping_profile_id: shippingProfile.id,
+      // Note: Tags are handled separately after product creation
+      // tags: [{ value: "Restricted" }],
+      images: [
         {
-          title: "Restricted Medusa RX",
-          category_ids: [],
-          description: "This is a restricted product for patients only.",
-          handle: "restricted-rx",
-          weight: 400,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          // Note: Tags are handled separately after product creation
-          // tags: [{ value: "Restricted" }],
-          images: [
+          url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+        },
+      ],
+      options: [
+        {
+          title: "Dose",
+          values: ["10mg", "20mg"],
+        },
+      ],
+      variants: [
+        {
+          title: "10mg",
+          sku: "RX-10MG",
+          options: {
+            Dose: "10mg",
+          },
+          prices: [
             {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-            },
-          ],
-          options: [
-            {
-              title: "Dose",
-              values: ["10mg", "20mg"],
-            },
-          ],
-          variants: [
-            {
-              title: "10mg",
-              sku: "RX-10MG",
-              options: {
-                Dose: "10mg",
-              },
-              prices: [
-                {
-                  amount: 100,
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
+              amount: 100,
+              currency_code: "usd",
             },
           ],
         },
       ],
+      sales_channels: [
+        {
+          id: defaultSalesChannel[0].id,
+        },
+      ],
+    },
+      ],
     },
   });
-  logger.info("Finished seeding product data.");
+logger.info("Finished seeding product data.");
 
-  logger.info("Seeding inventory levels.");
+logger.info("Seeding inventory levels.");
 
-  const { data: inventoryItems } = await query.graph({
-    entity: "inventory_item",
-    fields: ["id"],
-  });
+const { data: inventoryItems } = await query.graph({
+  entity: "inventory_item",
+  fields: ["id"],
+});
 
-  const inventoryLevels: CreateInventoryLevelInput[] = [];
-  for (const inventoryItem of inventoryItems) {
-    const inventoryLevel = {
-      location_id: stockLocation.id,
-      stocked_quantity: 1000000,
-      inventory_item_id: inventoryItem.id,
-    };
-    inventoryLevels.push(inventoryLevel);
-  }
+const inventoryLevels: CreateInventoryLevelInput[] = [];
+for (const inventoryItem of inventoryItems) {
+  const inventoryLevel = {
+    location_id: stockLocation.id,
+    stocked_quantity: 1000000,
+    inventory_item_id: inventoryItem.id,
+  };
+  inventoryLevels.push(inventoryLevel);
+}
 
-  await createInventoryLevelsWorkflow(container).run({
-    input: {
-      inventory_levels: inventoryLevels,
-    },
-  });
+await createInventoryLevelsWorkflow(container).run({
+  input: {
+    inventory_levels: inventoryLevels,
+  },
+});
 
-  logger.info("Finished seeding inventory levels data.");
+logger.info("Finished seeding inventory levels data.");
 
-  await seedVIPProgram({ container }, "default");
-  logger.info("Finished seeding VIP program data.");
+await seedVIPProgram({ container }, "default");
+logger.info("Finished seeding VIP program data.");
 }

@@ -62,21 +62,12 @@ module.exports = defineConfig({
     {
       resolve: "./src/modules/subscription",
     },
-    // {
-    //   resolve: "@rokmohar/medusa-plugin-meilisearch",
-    //   options: {
-    //     config: {
-    //       host: process.env.MEILISEARCH_HOST || "http://localhost:7700",
-    //       apiKey: process.env.MEILISEARCH_API_KEY || "masterKey",
-    //     },
-    //     settings: {
-    //       indexSettings: {
-    //         searchableAttributes: ["title", "description", "variant_sku"],
-    //         displayedAttributes: ["id", "title", "description", "variant_sku", "thumbnail", "handle"],
-    //       },
-    //     },
-    //   },
-    // },
+    {
+      resolve: "./src/modules/postgres-search",
+      options: {
+        // No options needed for this basic implementation
+      }
+    },
     {
       resolve: "./src/modules/analytics",
     },
