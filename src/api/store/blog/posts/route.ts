@@ -1,21 +1,18 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { listEntries } from "@medusajs/framework/utils"
 import { BLOG_MODULE } from "../../../../modules/blog"
+import BlogService from "../../../../modules/blog/service"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-    const result = await listEntries(
-        req,
-        {
-            container: req.scope,
-            api: {
-                resource: "blog_post",
-                fields: ["*", "id", "title", "slug", "content", "excerpt", "image", "published_at", "created_at", "updated_at"],
-            },
-            modules: {
-                [BLOG_MODULE]: req.scope.resolve(BLOG_MODULE),
-            },
-        }
-    )
+    const blogService: BlogService = req.scope.resolve(BLOG_MODULE)
 
-    res.json(result)
+    // Only return published posts for storefront
+    const [posts, count] = await blogService.listAndCountBlog_posts({})
+
+    // Filter to only published posts
+    const publishedPosts = posts.filter((p) => p.published_at !== null)
+
+    res.json({
+        blog_posts: publishedPosts,
+        count: publishedPosts.length,
+    })
 }

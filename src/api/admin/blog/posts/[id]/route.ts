@@ -1,37 +1,44 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { updateEntry, deleteEntry } from "@medusajs/framework/utils"
 import { BLOG_MODULE } from "../../../../../modules/blog"
+import BlogService from "../../../../../modules/blog/service"
+
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+    const { id } = req.params
+    const blogService: BlogService = req.scope.resolve(BLOG_MODULE)
+
+    const post = await blogService.retrieveBlog_post(id)
+
+    res.json({ blog_post: post })
+}
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-    const result = await updateEntry(
-        req,
-        {
-            container: req.scope,
-            api: {
-                resource: "blog_post",
-            },
-            modules: {
-                [BLOG_MODULE]: req.scope.resolve(BLOG_MODULE),
-            },
-        }
-    )
+    const { id } = req.params
+    const blogService: BlogService = req.scope.resolve(BLOG_MODULE)
+    const body = req.body as {
+        title?: string
+        slug?: string
+        content?: string
+        excerpt?: string
+        image?: string
+        published_at?: string
+    }
 
-    res.json(result)
+    // Convert published_at string to Date if provided
+    const data: Record<string, unknown> = { ...body }
+    if (body.published_at !== undefined) {
+        data.published_at = body.published_at ? new Date(body.published_at) : null
+    }
+
+    const post = await blogService.updateBlog_posts({ id }, data)
+
+    res.json({ blog_post: post })
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
-    const result = await deleteEntry(
-        req,
-        {
-            container: req.scope,
-            api: {
-                resource: "blog_post",
-            },
-            modules: {
-                [BLOG_MODULE]: req.scope.resolve(BLOG_MODULE),
-            },
-        }
-    )
+    const { id } = req.params
+    const blogService: BlogService = req.scope.resolve(BLOG_MODULE)
 
-    res.json(result)
+    await blogService.deleteBlog_posts([id])
+
+    res.json({ id, deleted: true })
 }

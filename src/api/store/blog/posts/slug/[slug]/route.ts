@@ -5,7 +5,7 @@ import BlogService from "../../../../../../modules/blog/service"
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     const blogService: BlogService = req.scope.resolve(BLOG_MODULE)
 
-    const [posts] = await blogService.listBlogPosts({
+    const posts = await blogService.listBlog_posts({
         slug: req.params.slug,
     })
 
@@ -15,5 +15,13 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
         return
     }
 
-    res.json({ blog_post: posts[0] })
+    const post = posts[0]
+
+    // Only return if published
+    if (!post.published_at) {
+        res.status(404).json({ message: "Post not found" })
+        return
+    }
+
+    res.json({ blog_post: post })
 }

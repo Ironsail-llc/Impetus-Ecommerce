@@ -1,38 +1,36 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { createEntry, listEntries } from "@medusajs/framework/utils"
 import { BLOG_MODULE } from "../../../../modules/blog"
+import BlogService from "../../../../modules/blog/service"
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-    const result = await listEntries(
-        req,
-        {
-            container: req.scope,
-            api: {
-                resource: "blog_post",
-                fields: ["*", "id", "title", "slug", "content", "excerpt", "image", "published_at", "created_at", "updated_at"],
-            },
-            modules: {
-                [BLOG_MODULE]: req.scope.resolve(BLOG_MODULE),
-            },
-        }
-    )
+    const blogService: BlogService = req.scope.resolve(BLOG_MODULE)
 
-    res.json(result)
+    const [posts, count] = await blogService.listAndCountBlog_posts({})
+
+    res.json({
+        blog_posts: posts,
+        count,
+    })
 }
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-    const result = await createEntry(
-        req,
-        {
-            container: req.scope,
-            api: {
-                resource: "blog_post",
-            },
-            modules: {
-                [BLOG_MODULE]: req.scope.resolve(BLOG_MODULE),
-            },
-        }
-    )
+    const blogService: BlogService = req.scope.resolve(BLOG_MODULE)
+    const body = req.body as {
+        title: string
+        slug: string
+        content: string
+        excerpt?: string
+        image?: string
+        published_at?: string
+    }
 
-    res.json(result)
+    // Convert published_at string to Date if provided
+    const data = {
+        ...body,
+        published_at: body.published_at ? new Date(body.published_at) : null,
+    }
+
+    const post = await blogService.createBlog_posts(data)
+
+    res.status(201).json({ blog_post: post })
 }

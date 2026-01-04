@@ -16,6 +16,9 @@ module.exports = defineConfig({
   },
   modules: [
     {
+      resolve: "./src/modules/admin-roles",
+    },
+    {
       resolve: "./src/modules/loyalty",
     },
     {
@@ -56,5 +59,26 @@ module.exports = defineConfig({
     //     ],
     //   },
     // },
+    {
+      resolve: "./src/modules/subscription",
+    },
+    // {
+    //   resolve: "@rokmohar/medusa-plugin-meilisearch",
+    //   options: {
+    //     config: {
+    //       host: process.env.MEILISEARCH_HOST || "http://localhost:7700",
+    //       apiKey: process.env.MEILISEARCH_API_KEY || "masterKey",
+    //     },
+    //     settings: {
+    //       indexSettings: {
+    //         searchableAttributes: ["title", "description", "variant_sku"],
+    //         displayedAttributes: ["id", "title", "description", "variant_sku", "thumbnail", "handle"],
+    //       },
+    //     },
+    //   },
+    // },
+    {
+      resolve: "./src/modules/analytics",
+    },
   ],
 })

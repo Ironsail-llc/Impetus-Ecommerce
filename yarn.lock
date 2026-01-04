@@ -1720,7 +1720,7 @@
     tailwindcss "^3.4.3"
     vite "^5.4.21"
 
-"@medusajs/admin-sdk@^2.12.1", "@medusajs/admin-sdk@2.12.1":
+"@medusajs/admin-sdk@^2.10.2", "@medusajs/admin-sdk@^2.12.1", "@medusajs/admin-sdk@2.12.1":
   version "2.12.1"
   resolved "https://registry.npmjs.org/@medusajs/admin-sdk/-/admin-sdk-2.12.1.tgz"
   integrity sha512-cV6Cw+UPIGUh4gdE3DqlOeK0uLu9m5VdxAJLmo5Btul+T4k18rtZggkamIvCA5u7XBHvwjZwlpPQCYOXUVQkqw==
@@ -1826,7 +1826,7 @@
   resolved "https://registry.npmjs.org/@medusajs/cart/-/cart-2.12.1.tgz"
   integrity sha512-d1esWBSfCdQZ0DouJ1C/y7BMwfNTlI0OP/W/A7NNxgKLouyqAk4ftfKTD6TG7U/D4W9YOnBpDeZ/xUbiaRCPQQ==
 
-"@medusajs/cli@^2.12.1", "@medusajs/cli@2.12.1":
+"@medusajs/cli@^2.10.2", "@medusajs/cli@^2.12.1", "@medusajs/cli@2.12.1":
   version "2.12.1"
   resolved "https://registry.npmjs.org/@medusajs/cli/-/cli-2.12.1.tgz"
   integrity sha512-1p0bPGkRzFevhddrNT0zAdFx9PW+3RRKO4uNhtz9DVWMuSvgy8hgAfKZFXLl+wFfop0hYdhbH4htuMJUXHHzng==
@@ -1938,7 +1938,7 @@
     awilix "^8.0.1"
     pg "^8.16.3"
 
-"@medusajs/draft-order@2.12.1":
+"@medusajs/draft-order@^2.12.1", "@medusajs/draft-order@2.12.1":
   version "2.12.1"
   resolved "https://registry.npmjs.org/@medusajs/draft-order/-/draft-order-2.12.1.tgz"
   integrity sha512-59sdX3/pkGh6MqGmlbfstA4ZTAhfiVp2lc0Krm8/JBZdXz5nv/c5zYPdIohG7kqM1jyF+7IMu4vF5kmNi8n+VA==
@@ -1988,7 +1988,7 @@
   resolved "https://registry.npmjs.org/@medusajs/file/-/file-2.12.1.tgz"
   integrity sha512-HCGp7DJRXh474lPtJdhg1Xl0IanqVu4MPI2HeJLSqFXEvEfZTpTAymo7qrGHaIX2w32Bgy7QgZuQeyzMcNuImQ==
 
-"@medusajs/framework@^2.12.1", "@medusajs/framework@2.12.1":
+"@medusajs/framework@^2.10.2", "@medusajs/framework@^2.12.1", "@medusajs/framework@2.12.1":
   version "2.12.1"
   resolved "https://registry.npmjs.org/@medusajs/framework/-/framework-2.12.1.tgz"
   integrity sha512-2lNon17QbbqyHYC+EuQQnjPg3RTWTGIuJZwVdbdRUmGOUtIxCccGnOA8mNCyu7J/sCoT6HPTko6wFzNd7l274Q==
@@ -2028,7 +2028,7 @@
   resolved "https://registry.npmjs.org/@medusajs/fulfillment/-/fulfillment-2.12.1.tgz"
   integrity sha512-p5r0bXMYX4PEkt16BaGZ7WnYhx/7VlG8NDmDrAuUjHyTjkFuQ0UCB6gBs/0QGbOTZ3s2+KV9mBJ3w73TFwUR7Q==
 
-"@medusajs/icons@2.12.1":
+"@medusajs/icons@^2.10.2", "@medusajs/icons@2.12.1":
   version "2.12.1"
   resolved "https://registry.npmjs.org/@medusajs/icons/-/icons-2.12.1.tgz"
   integrity sha512-IRMygarmD7GqcOzbaVqXvVk2kxwqFyfVrOSwj5B2AB4CGWSE0metgpTKHDhRq7Ch7E1Kky0FzUvskTcQtV7JVg==
@@ -2073,7 +2073,7 @@
   resolved "https://registry.npmjs.org/@medusajs/locking/-/locking-2.12.1.tgz"
   integrity sha512-FIGJWT4m2z0kWyfK3igjiJUT2yOVHoOITktgq+SdcP4IlVhdsxyocnPant1JQpz7WcRZYqg71h1Ix+GADYk+eQ==
 
-"@medusajs/medusa@^2.12.1", "@medusajs/medusa@2.12.1":
+"@medusajs/medusa@^2.10.2", "@medusajs/medusa@^2.12.1", "@medusajs/medusa@2.12.1":
   version "2.12.1"
   resolved "https://registry.npmjs.org/@medusajs/medusa/-/medusa-2.12.1.tgz"
   integrity sha512-sRrbkvn2FoGxlrAvIRFG6N2VWHTokGsq1ShAPNMhfSfh1X5bT9YUTSX/fQGJxcue1VQ1AHThdZ5NsXy3kgiL6A==
@@ -2259,7 +2259,7 @@
     remove-trailing-slash "^0.1.1"
     uuid "^9.0.0"
 
-"@medusajs/test-utils@^2.12.1", "@medusajs/test-utils@2.12.1":
+"@medusajs/test-utils@^2.10.2", "@medusajs/test-utils@^2.12.1", "@medusajs/test-utils@2.12.1":
   version "2.12.1"
   resolved "https://registry.npmjs.org/@medusajs/test-utils/-/test-utils-2.12.1.tgz"
   integrity sha512-yfDo4bJPM73rgACmWXGHScx1Q1nSwqhHzQzasQ5WES3Rr2i/OvspnfcQkdP0DQLEsoaC8GxsRiREE0+lyVarVA==
@@ -2277,7 +2277,7 @@
   dependencies:
     bignumber.js "^9.1.2"
 
-"@medusajs/ui@4.0.29":
+"@medusajs/ui@^4.0.22", "@medusajs/ui@4.0.29":
   version "4.0.29"
   resolved "https://registry.npmjs.org/@medusajs/ui/-/ui-4.0.29.tgz"
   integrity sha512-zdpOOvh1rhdV2VpJlHhdSl5F1q7/fbarPBSVtxCEqPcxTgH/rsrLORY2FCr32VROrmMUc6wvd1nEh+1zlgL8Ug==
@@ -2369,7 +2369,19 @@
     tsconfig-paths "4.2.0"
     yargs "17.7.2"
 
-"@mikro-orm/core@^6.0.0", "@mikro-orm/core@6.4.16":
+"@mikro-orm/cli@6.4.3":
+  version "6.4.3"
+  resolved "https://registry.npmjs.org/@mikro-orm/cli/-/cli-6.4.3.tgz"
+  integrity sha512-DWnYNxoyMgU6L90TGBlT0eziTu6yl15ArnnFoq0kyOjp8JEMRjin+8cizSrKyQ3QiQZ5iop5fB0i9Sp+Hbgd8Q==
+  dependencies:
+    "@jercle/yargonaut" "1.1.5"
+    "@mikro-orm/core" "6.4.3"
+    "@mikro-orm/knex" "6.4.3"
+    fs-extra "11.2.0"
+    tsconfig-paths "4.2.0"
+    yargs "17.7.2"
+
+"@mikro-orm/core@6.4.16":
   version "6.4.16"
   resolved "https://registry.npmjs.org/@mikro-orm/core/-/core-6.4.16.tgz"
   integrity sha512-BW/My1VlI0R25Eojdh0UiET8J+mEruThksGVfllEnjJQ0uwGs3mm/TbMclv0g+d7Qp4+mpzDQU4+lIo8okHYsw==
@@ -2899,10 +2911,10 @@
   dependencies:
     "@opentelemetry/core" "^2.0.0"
 
-"@posthog/core@1.5.5":
-  version "1.5.5"
-  resolved "https://registry.npmjs.org/@posthog/core/-/core-1.5.5.tgz"
-  integrity sha512-m7G1EQTgo9xrr3lZxCp9C2egP99MSRpIDD95wYzwUPxMesKxI0xEQ+TC5LS/XOXIdmsNvsx4UcxwmzhSwD2GWA==
+"@posthog/core@1.9.0":
+  version "1.9.0"
+  resolved "https://registry.npmjs.org/@posthog/core/-/core-1.9.0.tgz"
+  integrity sha512-j7KSWxJTUtNyKynLt/p0hfip/3I46dWU2dk+pt7dKRoz2l5CYueHuHK4EO7Wlgno5yo1HO4sc4s30MXMTICHJw==
   dependencies:
     cross-spawn "^7.0.6"
 
@@ -4873,6 +4885,14 @@
   version "1.13.1"
   resolved "https://registry.npmjs.org/@remix-run/router/-/router-1.13.1.tgz"
   integrity sha512-so+DHzZKsoOcoXrILB4rqDkMDy7NLMErRdOxvzvOKb507YINKUP4Di+shbTZDhSE/pBZ+vr7XGIpcOO0VLSA+Q==
+
+"@rokmohar/medusa-plugin-meilisearch@^1.3.5":
+  version "1.3.5"
+  resolved "https://registry.npmjs.org/@rokmohar/medusa-plugin-meilisearch/-/medusa-plugin-meilisearch-1.3.5.tgz"
+  integrity sha512-ZZCYGqiMvaT9lWjxPh0zrfym1lNO+eFQRgY+F3hJty2aMA/oqjhBab3wj2FenxVjHJ5fU5fqdTrGT52ImbS2UQ==
+  dependencies:
+    "@tanstack/react-query" "5.64.2"
+    meilisearch "^0.53.0"
 
 "@rolldown/pluginutils@1.0.0-beta.27":
   version "1.0.0-beta.27"
@@ -7462,6 +7482,15 @@ fs-extra@^8.1:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
+fs-extra@11.2.0:
+  version "11.2.0"
+  resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-11.2.0.tgz"
+  integrity sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
 fs-extra@11.3.0:
   version "11.3.0"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-11.3.0.tgz"
@@ -7475,6 +7504,11 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
+
+fsevents@^2.3.2, fsevents@~2.3.2, fsevents@~2.3.3:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 function-bind@^1.1.2:
   version "1.1.2"
@@ -8835,6 +8869,11 @@ media-typer@0.3.0:
   resolved "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz"
   integrity sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==
 
+meilisearch@^0.53.0:
+  version "0.53.0"
+  resolved "https://registry.npmjs.org/meilisearch/-/meilisearch-0.53.0.tgz"
+  integrity sha512-nG4VXbEOSzUmtbfsgOo+t6yX1ECEgXaT4hC0ap9MBpQGK5xwT+NWYDENYsKWR75cVaWaAqva+ok4zHlgtdXlLw==
+
 merge-descriptors@1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-1.0.3.tgz"
@@ -9432,7 +9471,7 @@ pg-types@^2.2.0, pg-types@2.2.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-pg@^8.16.3, pg@^8.3.0, pg@>=8.0:
+pg@^8.13.0, pg@^8.16.3, pg@^8.3.0, pg@>=8.0:
   version "8.16.3"
   resolved "https://registry.npmjs.org/pg/-/pg-8.16.3.tgz"
   integrity sha512-enxc1h0jA/aq5oSDMvqyW3q89ra6XIIDZgCX9vkMrnz5DFTw/Ny3Li2lFQ+pt3L6MCgm/5o2o8HW9hiJji+xvw==
@@ -9617,11 +9656,11 @@ postgres-interval@4.0.2:
   integrity sha512-EMsphSQ1YkQqKZL2cuG0zHkmjCCzQqQ71l2GXITqRwjhRleCdv00bDk/ktaSi0LnlaPzAc3535KTrjXsTdtx7A==
 
 posthog-node@^5.11.0:
-  version "5.13.2"
-  resolved "https://registry.npmjs.org/posthog-node/-/posthog-node-5.13.2.tgz"
-  integrity sha512-KfFsiL4v+d723fKYV9vT6lt4GYtryL8FOK7LjlDQ/lJai/EEULkmGvQaNUzBW+4lK9fUaz+AhCyipNDUaXkZqA==
+  version "5.18.1"
+  resolved "https://registry.npmjs.org/posthog-node/-/posthog-node-5.18.1.tgz"
+  integrity sha512-Hi7cRqAlvuEitdiurXJFdMip+BxcwYoX66at5RErMVP91V+Ph9BspGiawC3mJx/4znjwUjF29kAhf8oZQ2uJ5Q==
   dependencies:
-    "@posthog/core" "1.5.5"
+    "@posthog/core" "1.9.0"
 
 pretty-format@^29.0.0, pretty-format@^29.7.0:
   version "29.7.0"

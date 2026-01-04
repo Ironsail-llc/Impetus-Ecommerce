@@ -922,10 +922,8 @@ export default async function seedDemoData({ container }: ExecArgs) {
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          // tags: [{ value: "Restricted" }], 
-          tags: [
-            { value: "Restricted" }
-          ],
+          // Note: Tags are handled separately after product creation
+          // tags: [{ value: "Restricted" }],
           images: [
             {
               url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",

@@ -54,7 +54,7 @@ export default async function seedGatingData({ container }: ExecArgs) {
             // Let's try to create using Workflow.
             const { result } = await createProductTagsWorkflow(container).run({
                 input: {
-                    tags: [{ value: "Restricted" }]
+                    product_tags: [{ value: "Restricted" }]
                 }
             });
             restrictedTag = result[0];
