@@ -1,10 +1,11 @@
 import { MedusaContainer } from "@medusajs/framework/types"
 import { SUBSCRIPTION_MODULE } from "../modules/subscription"
 import { SubscriptionStatus } from "../modules/subscription/models/subscription"
+import type SubscriptionModuleService from "../modules/subscription/service"
 
 export default async function processSubscriptions(container: MedusaContainer) {
     const logger = container.resolve("logger")
-    const subscriptionService = container.resolve(SUBSCRIPTION_MODULE)
+    const subscriptionService = container.resolve(SUBSCRIPTION_MODULE) as SubscriptionModuleService
 
     logger.info("Starting subscription processing job...")
 
@@ -30,7 +31,7 @@ export default async function processSubscriptions(container: MedusaContainer) {
                 logger.info(`Processing subscription ${sub.id}...`)
 
                 // 2. Charge Payment via NMI
-                const paymentProviderService = container.resolve("payment")
+                const paymentProviderService = container.resolve("payment") as any
 
                 // Retrieve customer logic would go here
                 // For this implementation, we assume payment_data contains the necessary token
