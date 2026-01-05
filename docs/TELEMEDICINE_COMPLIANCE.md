@@ -79,47 +79,28 @@ Global settings are stored as key-value pairs (using a `setConfig` pattern) but 
 
 ---
 
-## Integration with Product Compliance
+## User Interface
 
-The module works in tandem with the **Product Compliance** module (`src/modules/product-compliance`), which extends the Product model.
+### Admin Dashboard
+**Routes**:
+- `/admin/compliance`: Main dashboard.
+- `/admin/compliance/regions`: Region rules management.
+- `/admin/compliance/configuration`: Global settings.
+- `/admin/compliance/customers/[id]`: Customer specific compliance view.
 
-### ProductControlledSubstance Model
-**Location**: `src/modules/product-compliance/models/product-controlled-substance.ts`
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `controlled_substance` | Enum | `none`, `schedule_ii`...`schedule_v` |
-| `requires_synchronous_consultation` | Boolean | Force consultation regardless of other rules |
-| `is_consultation_product` | Boolean | If true, purchasing this product fulfills establishment |
-| `consultation_product_id` | String | Links to a specific required consultation product |
-
----
-
-## Webhooks & Events
-
-### Incoming (EMR -> Us)
-- **Endpoint**: `/webhooks/emr/video-call-completed`
-- **Action**: Creates `CustomerRegionEstablishment` via `fulfillment_source: "emr_video_call"`.
-
-### Outgoing (Us -> Subscribers)
-- `compliance.requirement_created`: When an order needs an establishment check.
-- `compliance.establishment_fulfilled`: When a customer is successfully established.
+### Storefront Components
+**Location**: `src/lib/data/compliance.ts` (Data Layer)
+- **Compliance Banner**: Alerts users to missing requirements.
+- **Status Badge**: Shows "Established" or "Action Required".
+- **My Requirements**: Account page section for managing compliance.
 
 ---
 
-## Module Structure
+## Integration Tests
+**Location**: `integration-tests/http/compliance.spec.ts`
+Covers key user stories:
+1.  Admin configuring rules.
+2.  Customer checking status.
+3.  System enforcing holds/blocks.
 
-```text
-src/modules/telemedicine-compliance/
-├── models/
-│   ├── customer-region-establishment.ts
-│   └── compliance-configuration.ts
-├── service.ts       # Core logic
-├── index.ts
-└── migrations/
-
-src/modules/product-compliance/
-├── models/
-│   └── product-controlled-substance.ts
-└── service.ts
-```
+Run via: `npm run test:integration -- --testPathPattern=compliance`

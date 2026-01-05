@@ -19,29 +19,54 @@ const ProductRestrictedSwitcher = ({ data }: { data: HttpTypes.AdminProduct }) =
     const handleToggle = async (checked: boolean) => {
         setLoading(true)
         try {
-            // We need to fetch the existing tags to avoid overwriting them?
-            // The data prop might be stale if we don't re-fetch, but for now we trust it or fetches fresh?
-            // Actually, Medusa V2 Update Product usually takes a list of tags. 
-            // If we send just the new tag, does it replace all? Yes, usually.
-            // So we must be careful.
-
-            // Let's fetch the latest product first to be safe.
+            // Fetch latest product data
             const res = await fetch(`/admin/products/${data.id}`, { headers: { "Content-Type": "application/json" } })
             const { product } = await res.json()
 
             let newTags = product.tags || []
 
             if (checked) {
+                // If we are enabling restriction, ensure the "Restricted" tag exists
+                // 1. Check if it's already on the product (avoid refetch if possible, but we just fetched)
                 if (!newTags.some((t: any) => t.value === "Restricted")) {
-                    newTags.push({ value: "Restricted" })
+                    // 2. We need to find the tag ID or create it
+                    let restrictedTagId: string | undefined
+
+                    // Search for existing tag
+                    const tagSearchRes = await fetch(`/admin/product-tags?limit=1&q=Restricted`, { headers: { "Content-Type": "application/json" } })
+                    const { product_tags } = await tagSearchRes.json()
+                    const existingTag = product_tags.find((t: any) => t.value === "Restricted")
+
+                    if (existingTag) {
+                        restrictedTagId = existingTag.id
+                    } else {
+                        // Create it
+                        const createTagRes = await fetch(`/admin/product-tags`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ value: "Restricted" })
+                        })
+
+                        if (!createTagRes.ok) {
+                            throw new Error("Failed to create Restricted tag")
+                        }
+
+                        const { product_tag } = await createTagRes.json()
+                        restrictedTagId = product_tag.id
+                    }
+
+                    if (restrictedTagId) {
+                        newTags.push({ id: restrictedTagId })
+                    }
                 }
             } else {
+                // If disabling, remove the tag
                 newTags = newTags.filter((t: any) => t.value !== "Restricted")
             }
 
-            // Transform tags for update payload (usually expects [{id: ...}, {value: ...}] or just values?)
-            // V2 Product Update expects `tags: [{id: ...} | {value: ...}]`
-            const tagsPayload = newTags.map((t: any) => t.id ? { id: t.id } : { value: t.value })
+            // Transform tags for update payload - Medusa expects ID for existing, but here we normalized to objects
+            // We should only send IDs for all tags to be safe and consistent
+            const tagsPayload = newTags.map((t: any) => ({ id: t.id }))
 
             const updateRes = await fetch(`/admin/products/${data.id}`, {
                 method: "POST",
@@ -53,6 +78,8 @@ const ProductRestrictedSwitcher = ({ data }: { data: HttpTypes.AdminProduct }) =
                 setIsRestricted(checked)
                 toast.success(`Product is now ${checked ? "Restricted" : "Unrestricted"}`)
             } else {
+                const err = await updateRes.json()
+                console.error("Update failed", err)
                 throw new Error("Failed to update")
             }
 

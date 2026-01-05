@@ -89,7 +89,7 @@ const ComplianceConfigurationPage = () => {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
+        body: JSON.stringify({ updates: config }),
       })
 
       if (res.ok) {
