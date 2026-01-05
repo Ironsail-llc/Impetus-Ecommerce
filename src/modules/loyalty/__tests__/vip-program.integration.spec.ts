@@ -7,6 +7,7 @@ jest.setTimeout(120000)
 import seedVIPProgram from "../../../scripts/seed-vip-program"
 
 medusaIntegrationTestRunner({
+    dbName: "medusa_integration_fix",
     testSuite: ({ getContainer }) => {
         let loyaltyService: LoyaltyModuleService
         let container

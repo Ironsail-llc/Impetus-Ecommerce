@@ -71,5 +71,11 @@ module.exports = defineConfig({
     {
       resolve: "./src/modules/analytics",
     },
+    {
+      resolve: "./src/modules/telemedicine-compliance",
+    },
+    {
+      resolve: "./src/modules/product-compliance",
+    },
   ],
 })

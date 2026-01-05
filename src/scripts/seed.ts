@@ -229,14 +229,18 @@ export default async function seedDemoData({ container }: ExecArgs) {
     },
   });
 
-  await link.create({
-    [Modules.STOCK_LOCATION]: {
-      stock_location_id: stockLocation.id,
-    },
-    [Modules.FULFILLMENT]: {
-      fulfillment_provider_id: "manual_manual",
-    },
-  });
+  try {
+    await link.create({
+      [Modules.STOCK_LOCATION]: {
+        stock_location_id: stockLocation.id,
+      },
+      [Modules.FULFILLMENT]: {
+        fulfillment_provider_id: "manual_manual",
+      },
+    });
+  } catch (e) {
+    logger.warn(`Skipping link stock_location <-> fulfillment_provider: ${e.message}`);
+  }
 
   logger.info("Seeding fulfillment data...");
   const shippingProfiles = await fulfillmentModuleService.listShippingProfiles({
@@ -259,7 +263,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
     shippingProfile = shippingProfileResult[0];
   }
 
-  let fulfillmentSet = (await fulfillmentModuleService.listFulfillmentSets({ name: CONFIG.fulfillment.name }))[0];
+  let fulfillmentSet = (await fulfillmentModuleService.listFulfillmentSets(
+    { name: CONFIG.fulfillment.name },
+    { relations: ["service_zones"] }
+  ))[0];
   if (!fulfillmentSet) {
     fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
       name: CONFIG.fulfillment.name,
@@ -276,14 +283,18 @@ export default async function seedDemoData({ container }: ExecArgs) {
     });
   }
 
-  await link.create({
-    [Modules.STOCK_LOCATION]: {
-      stock_location_id: stockLocation.id,
-    },
-    [Modules.FULFILLMENT]: {
-      fulfillment_set_id: fulfillmentSet.id,
-    },
-  });
+  try {
+    await link.create({
+      [Modules.STOCK_LOCATION]: {
+        stock_location_id: stockLocation.id,
+      },
+      [Modules.FULFILLMENT]: {
+        fulfillment_set_id: fulfillmentSet.id,
+      },
+    });
+  } catch (e) {
+    logger.warn(`Skipping link stock_location <-> fulfillment_set: ${e.message}`);
+  }
 
   await createShippingOptionsWorkflow(container).run({
     input: [
@@ -370,387 +381,428 @@ export default async function seedDemoData({ container }: ExecArgs) {
   logger.info("Finished seeding stock location data.");
 
   logger.info("Seeding publishable API key data...");
-  const { result: publishableApiKeyResult } = await createApiKeysWorkflow(
-    container
-  ).run({
-    input: {
-      api_keys: [
-        {
-          title: "Webshop",
-          type: "publishable",
-          created_by: "",
-        },
-      ],
-    },
-  });
-  const publishableApiKey = publishableApiKeyResult[0];
+  const apiKeyService = container.resolve(Modules.API_KEY);
+  const existingKeys = await apiKeyService.listApiKeys({ title: "Webshop", type: "publishable" });
 
-  await linkSalesChannelsToApiKeyWorkflow(container).run({
-    input: {
-      id: publishableApiKey.id,
-      add: [defaultSalesChannel[0].id],
-    },
-  });
-  logger.info("Finished seeding publishable API key data.");
+  let publishableApiKey = existingKeys[0];
+
+  if (!publishableApiKey) {
+    const { result: publishableApiKeyResult } = await createApiKeysWorkflow(
+      container
+    ).run({
+      input: {
+        api_keys: [
+          {
+            title: "Webshop",
+            type: "publishable",
+            created_by: "",
+          },
+        ],
+      },
+    });
+    publishableApiKey = publishableApiKeyResult[0];
+  }
+
+  // Ensure it's linked
+  try {
+    await linkSalesChannelsToApiKeyWorkflow(container).run({
+      input: {
+        id: publishableApiKey.id,
+        add: [defaultSalesChannel[0].id],
+      },
+    });
+  } catch (e) {
+    // Link might exist
+  }
+
+  logger.info(`Finished seeding publishable API key data.`);
+  logger.info(`IMPORTANT: Your Publishable API Key is: ${publishableApiKey.token}`);
+  logger.info(`Please update NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY in your Vercel env with this value.`);
 
   logger.info("Seeding product data...");
 
-  const { result: categoryResult } = await createProductCategoriesWorkflow(
-    container
-  ).run({
-    input: {
-      product_categories: [
-        {
-          name: "Supplements",
-          is_active: true,
-        },
-        {
-          name: "Wellness",
-          is_active: true,
-        },
-        {
-          name: "Testing Kits",
-          is_active: true,
-        },
-        {
-          name: "Bundles",
-          is_active: true,
-        },
-      ],
-    },
-  });
+  let categoryResult;
+  try {
+    const { result } = await createProductCategoriesWorkflow(container).run({
+      input: {
+        product_categories: [
+          {
+            name: "Supplements",
+            is_active: true,
+          },
+          {
+            name: "Wellness",
+            is_active: true,
+          },
+          {
+            name: "Testing Kits",
+            is_active: true,
+          },
+          {
+            name: "Bundles",
+            is_active: true,
+          },
+        ],
+      },
+    });
+    categoryResult = result;
+  } catch (e) {
+    logger.warn(`Skipping category creation: ${e.message}`);
+    const productService = container.resolve(Modules.PRODUCT);
+    categoryResult = await productService.listProductCategories({}, { take: 1000 });
+  }
 
-  await createProductsWorkflow(container).run({
-    input: {
-      products: [
-        {
-          title: "Daily Multivitamin",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Supplements")!.id,
-          ],
-          description:
-            "Essential daily nutrients to support overall health and vitality. Formulated for optimal absorption.",
-          handle: "daily-multivitamin",
-          weight: 200,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png", // TODO: Replace with vitamin image
+  try {
+    const productService = container.resolve(Modules.PRODUCT);
+    let existingProducts: any[] = [];
+    try {
+      existingProducts = await productService.listProducts({}, { take: 1000 });
+    } catch (e) {
+      logger.warn("Could not list existing products, assuming empty");
+    }
+    const existingHandles = new Set(existingProducts.map((p) => p.handle));
+
+    const productsToCreate = [
+      {
+        title: "Daily Multivitamin",
+        category_ids: [
+          categoryResult.find((cat) => cat.handle === "supplements")?.id || categoryResult.find((cat) => cat.name === "Supplements")?.id,
+        ].filter(Boolean),
+        description:
+          "Essential daily nutrients to support overall health and vitality. Formulated for optimal absorption.",
+        handle: "daily-multivitamin",
+        weight: 200,
+        status: ProductStatus.PUBLISHED,
+        shipping_profile_id: shippingProfile.id,
+        images: [
+          {
+            url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png", // TODO: Replace with vitamin image
+          },
+        ],
+        options: [
+          {
+            title: "Supply",
+            values: ["30 Day", "60 Day", "90 Day"],
+          },
+        ],
+        variants: [
+          {
+            title: "30 Day Supply",
+            sku: "US-MULTI-30",
+            options: {
+              Supply: "30 Day",
             },
-          ],
-          options: [
-            {
-              title: "Supply",
-              values: ["30 Day", "60 Day", "90 Day"],
-            },
-          ],
-          variants: [
-            {
-              title: "30 Day Supply",
-              sku: "MULTI-30",
-              options: {
-                Supply: "30 Day",
+            prices: [
+              {
+                amount: 2999, // $29.99
+                currency_code: "usd",
               },
-              prices: [
-                {
-                  amount: 2999, // $29.99
-                  currency_code: "usd",
-                },
-              ],
+            ],
+          },
+          {
+            title: "60 Day Supply",
+            sku: "US-MULTI-60",
+            options: {
+              Supply: "60 Day",
             },
-            {
-              title: "60 Day Supply",
-              sku: "MULTI-60",
-              options: {
-                Supply: "60 Day",
+            prices: [
+              {
+                amount: 5499, // $54.99
+                currency_code: "usd",
               },
-              prices: [
-                {
-                  amount: 5499, // $54.99
-                  currency_code: "usd",
-                },
-              ],
+            ],
+          },
+          {
+            title: "90 Day Supply",
+            sku: "US-MULTI-90",
+            options: {
+              Supply: "90 Day",
             },
-            {
-              title: "90 Day Supply",
-              sku: "MULTI-90",
-              options: {
-                Supply: "90 Day",
+            prices: [
+              {
+                amount: 7999, // $79.99
+                currency_code: "usd",
               },
-              prices: [
-                {
-                  amount: 7999, // $79.99
-                  currency_code: "usd",
-                },
-              ],
+            ],
+          },
+        ],
+        sales_channels: [
+          {
+            id: defaultSalesChannel[0].id,
+          },
+        ],
+      },
+      {
+        title: "Sleep Support Complex",
+        category_ids: [
+          categoryResult.find((cat) => cat.handle === "wellness")?.id || "",
+          categoryResult.find((cat) => cat.handle === "supplements")?.id || "",
+        ].filter(Boolean),
+        description:
+          "A natural blend of melatonin, magnesium, and botanicals to promote restful sleep and recovery.",
+        handle: "sleep-support",
+        weight: 150,
+        status: ProductStatus.PUBLISHED,
+        shipping_profile_id: shippingProfile.id,
+        images: [
+          {
+            url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png", // TODO: Replace with sleep aid image
+          },
+        ],
+        options: [
+          {
+            title: "Format",
+            values: ["Capsules", "Gummies"],
+          },
+        ],
+        variants: [
+          {
+            title: "Capsules",
+            sku: "US-SLEEP-CAP",
+            options: {
+              Format: "Capsules",
             },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
+            prices: [
+              {
+                amount: 2499,
+                currency_code: "usd",
+              },
+            ],
+          },
+          {
+            title: "Gummies",
+            sku: "US-SLEEP-GUM",
+            options: {
+              Format: "Gummies",
             },
-          ],
+            prices: [
+              {
+                amount: 2699,
+                currency_code: "usd",
+              },
+            ],
+          },
+        ],
+        sales_channels: [
+          {
+            id: defaultSalesChannel[0].id,
+          },
+        ],
+      },
+      {
+        title: "At-Home Testosterone Test",
+        category_ids: [
+          categoryResult.find((cat) => cat.handle === "testing-kits")?.id || "",
+        ].filter(Boolean),
+        description:
+          "Comprehensive at-home hormone panel. Collect your sample in minutes and get results online within days.",
+        handle: "test-kit-testosterone",
+        weight: 300,
+        status: ProductStatus.PUBLISHED,
+        shipping_profile_id: shippingProfile.id,
+        images: [
+          {
+            url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png", // TODO: Replace with kit image
+          },
+        ],
+        options: [
+          {
+            title: "Type",
+            values: ["Basic", "Comprehensive"],
+          },
+        ],
+        variants: [
+          {
+            title: "Basic Panel",
+            sku: "US-TEST-T-BASIC",
+            options: {
+              Type: "Basic",
+            },
+            prices: [
+              {
+                amount: 4900,
+                currency_code: "usd",
+              },
+            ],
+          },
+          {
+            title: "Comprehensive Panel",
+            sku: "US-TEST-T-COMP",
+            options: {
+              Type: "Comprehensive",
+            },
+            prices: [
+              {
+                amount: 9900, // $99.00
+                currency_code: "usd",
+              },
+            ],
+          },
+        ],
+        sales_channels: [
+          {
+            id: defaultSalesChannel[0].id,
+          },
+        ],
+      },
+      {
+        title: "Medusa Shorts",
+        category_ids: [
+          categoryResult.find((cat) => cat.handle === "bundles")?.id || "",
+        ].filter(Boolean),
+        description:
+          "Test bundle product.",
+        handle: "shorts",
+        weight: 400,
+        status: ProductStatus.PUBLISHED,
+        shipping_profile_id: shippingProfile.id,
+        images: [
+          {
+            url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
+          },
+          {
+            url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
+          },
+        ],
+        options: [
+          {
+            title: "Size",
+            values: ["S", "M", "L", "XL"],
+          },
+        ],
+        variants: [
+          {
+            title: "S",
+            sku: "SHORTS-S",
+            options: {
+              Size: "S",
+            },
+            prices: [
+              {
+                amount: 10,
+                currency_code: "eur",
+              },
+              {
+                amount: 15,
+                currency_code: "usd",
+              },
+            ],
+          },
+          {
+            title: "M",
+            sku: "SHORTS-M",
+            options: {
+              Size: "M",
+            },
+            prices: [
+              {
+                amount: 10,
+                currency_code: "eur",
+              },
+              {
+                amount: 15,
+                currency_code: "usd",
+              },
+            ],
+          },
+          {
+            title: "L",
+            sku: "SHORTS-L",
+            options: {
+              Size: "L",
+            },
+            prices: [
+              {
+                amount: 10,
+                currency_code: "eur",
+              },
+              {
+                amount: 15,
+                currency_code: "usd",
+              },
+            ],
+          },
+          {
+            title: "XL",
+            sku: "SHORTS-XL",
+            options: {
+              Size: "XL",
+            },
+            prices: [
+              {
+                amount: 10,
+                currency_code: "eur",
+              },
+              {
+                amount: 15,
+                currency_code: "usd",
+              },
+            ],
+          },
+        ],
+        sales_channels: [
+          {
+            id: defaultSalesChannel[0].id,
+          },
+        ],
+      },
+      {
+        title: "Restricted Medusa RX",
+        category_ids: [],
+        description: "This is a restricted product for patients only.",
+        handle: "restricted-rx",
+        weight: 400,
+        status: ProductStatus.PUBLISHED,
+        shipping_profile_id: shippingProfile.id,
+        // Note: Tags are handled separately after product creation
+        // tags: [{ value: "Restricted" }],
+        images: [
+          {
+            url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
+          },
+        ],
+        options: [
+          {
+            title: "Dose",
+            values: ["10mg", "20mg"],
+          },
+        ],
+        variants: [
+          {
+            title: "10mg",
+            sku: "US-RX-10MG",
+            options: {
+              Dose: "10mg",
+            },
+            prices: [
+              {
+                amount: 100,
+                currency_code: "usd",
+              },
+            ],
+          },
+        ],
+        sales_channels: [
+          {
+            id: defaultSalesChannel[0].id,
+          },
+        ],
+      },
+    ].filter((p) => !existingHandles.has(p.handle));
+
+    if (productsToCreate.length > 0) {
+      logger.info(`Creating ${productsToCreate.length} new products...`);
+      await createProductsWorkflow(container).run({
+        input: {
+          products: productsToCreate,
         },
-        {
-          title: "Sleep Support Complex",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Wellness")!.id,
-            categoryResult.find((cat) => cat.name === "Supplements")!.id,
-          ],
-          description:
-            "A natural blend of melatonin, magnesium, and botanicals to promote restful sleep and recovery.",
-          handle: "sleep-support",
-          weight: 150,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png", // TODO: Replace with sleep aid image
-            },
-          ],
-          options: [
-            {
-              title: "Format",
-              values: ["Capsules", "Gummies"],
-            },
-          ],
-          variants: [
-            {
-              title: "Capsules",
-              sku: "SLEEP-CAP",
-              options: {
-                Format: "Capsules",
-              },
-              prices: [
-                {
-                  amount: 2499,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "Gummies",
-              sku: "SLEEP-GUM",
-              options: {
-                Format: "Gummies",
-              },
-              prices: [
-                {
-                  amount: 2699,
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
-            },
-          ],
-        },
-        {
-          title: "At-Home Testosterone Test",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Testing Kits")!.id,
-          ],
-          description:
-            "Comprehensive at-home hormone panel. Collect your sample in minutes and get results online within days.",
-          handle: "test-kit-testosterone",
-          weight: 300,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png", // TODO: Replace with kit image
-            },
-          ],
-          options: [
-            {
-              title: "Type",
-              values: ["Basic", "Comprehensive"],
-            },
-          ],
-          variants: [
-            {
-              title: "Basic Panel",
-              sku: "TEST-T-BASIC",
-              options: {
-                Type: "Basic",
-              },
-              prices: [
-                {
-                  amount: 4900,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "Comprehensive Panel",
-              sku: "TEST-T-COMP",
-              options: {
-                Type: "Comprehensive",
-              },
-              prices: [
-                {
-                  amount: 9900, // $99.00
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
-            },
-          ],
-        },
-        {
-          title: "Medusa Shorts",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Merch")!.id,
-          ],
-          description:
-            "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
-          handle: "shorts",
-          weight: 400,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
-            },
-          ],
-          options: [
-            {
-              title: "Size",
-              values: ["S", "M", "L", "XL"],
-            },
-          ],
-          variants: [
-            {
-              title: "S",
-              sku: "SHORTS-S",
-              options: {
-                Size: "S",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "M",
-              sku: "SHORTS-M",
-              options: {
-                Size: "M",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SHORTS-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SHORTS-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
-            },
-          ],
-        },
-        {
-          title: "Restricted Medusa RX",
-          category_ids: [],
-          description: "This is a restricted product for patients only.",
-          handle: "restricted-rx",
-          weight: 400,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          // Note: Tags are handled separately after product creation
-          // tags: [{ value: "Restricted" }],
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-            },
-          ],
-          options: [
-            {
-              title: "Dose",
-              values: ["10mg", "20mg"],
-            },
-          ],
-          variants: [
-            {
-              title: "10mg",
-              sku: "RX-10MG",
-              options: {
-                Dose: "10mg",
-              },
-              prices: [
-                {
-                  amount: 100,
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel[0].id,
-            },
-          ],
-        },
-      ],
-    },
-  });
+      });
+    } else {
+      logger.info("No new products to create.");
+    }
+  } catch (e) {
+    logger.warn(`Skipping product creation: ${e.message}`);
+  }
   logger.info("Finished seeding product data.");
 
   logger.info("Seeding inventory levels.");

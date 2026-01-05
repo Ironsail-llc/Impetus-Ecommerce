@@ -93,6 +93,12 @@ class LoyaltyModuleService extends MedusaService({
   LoyaltyReward,
   CustomerReward,
 }) {
+  constructor() {
+    // @ts-ignore
+    super(...arguments)
+    console.log("LOYALTY_SERVICE: initializing...")
+  }
+
   // Configuration cache
   private configCache: Map<string, any> = new Map() // Key format: "storeId:configKey"
   private configCacheTime: number = 0
